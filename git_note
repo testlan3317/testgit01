@@ -1,0 +1,31 @@
+git Hub
+git help config     -- show help details
+git config -h       -- show consise help
+git config --global user.name "username"
+git config --global user.emal "username@email.com"   
+git config --list              -- list global settings
+git config --global init.defaultbranch main      -- change the init default branch name to main instead of master
+
+
+Note: when you run git clone <repo_url> to clone a repository, the default remote origin is created automatically. 
+      If the repository is created by "git init" at local, there is no default remote repository, no origin. 
+      You need to set it up by yourself
+
+      git remote add origin <repo_url>
+
+repo_url is the path to an existing remtoe repository which you want to exchange data with. if it's in the local disk, it could be:
+file://home/me/foo.git or /home/me/foo.git. If it's hosted in Github, it could be https://github.com/me/foo.git 
+or ssh://git@github.com/me/foo.git
+
+git branch       -- will show the local branch
+git branch -a    -- will show the local and remote branch
+git remote -v    -- will show the remote repository
+
+git help switch 
+git help remote
+
+git add local files in the current folder:   git add .
+push to the remote git repo:       git push origin master
+
+
+
