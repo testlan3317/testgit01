@@ -83,6 +83,27 @@ revert it back to what it looked like when you last commited
 
   $git restore CONTRIBUTING.md
 
+Fetching:   $git fetch <remote>
+
+If you clone a repository, the command automatically adds that remote repository under the name "orogin".  
+
+Note: It's important to note that the git fetch command only downloads the data to your local repository -- it does not automatically
+merge it with any of your work or modify what your're currently working on. You have to merge it manually into your work when it's ok.
+
+
+git pull   -- automatically fetch and then merge that remote branch into your current branch. 
+git clone -- automatically sets up your local master branch to track the remote master branch (or whatever the default branch is called)
+on the server you cloned from.
+
+Renaming and Removing Remotes:
+
+  $git remote rename pb paul
+  $git remote remove pb
+  $git remote rm paul
+
+Inspecting a remote:
+
+  $git remote show origin
 
 
 If you want to clone the repository into a directory named something other than libgit2, you can specify the new directory name as additional argument:
