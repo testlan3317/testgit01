@@ -45,6 +45,46 @@ then commit.  "git rm"
 git log
 
 
+Undoing Things:    at any stage, you may want to undo something. one of comomn undos takes place when you commit too early and possibly
+forget to add some files, or you mess up your commit messge. If you want to redo that commit, make the additional changes you forgot,
+stage them, and commit again using the --amend option:
+
+$git commit --amend
+
+An example would be:
+
+If you commit and then realize you forgot to stage the changes in a file you wanted to add to this commit, you can do something:
+
+$git commit -m 'Initial commit'
+$git add forgotten_file
+$git commit --amend
+
+You end up with a single commit - the second commit replaces the results of the first.
+
+
+Unmodifying a Modified File:
+Note: it is important to understand that "git checkout -- <file>" command is dangerous. Any local changes you made to that file will
+      be gone. Git just replaced that file with the most recently-committed version. 
+
+Undoing this with git restore:
+For example, let's say you've changed two files and want to commit them as two separate changes, but you accidentally type 
+git add * and stage them both. How can you unstage one of the two? 
+
+    "git restore --staged <file>"
+
+ $git restore --staged CONTRIBUTED.md    -- The CONTRIBUTING.md file is modified but once again unstage.
+
+
+Unmodifying a modified file with git restore
+what if you realize that you don't want to keep your changes to the CONTRIBUTING.md file?  
+revert it back to what it looked like when you last commited
+
+    "git restore <file>"
+
+  $git restore CONTRIBUTING.md
+
+
+
 If you want to clone the repository into a directory named something other than libgit2, you can specify the new directory name as additional argument:
 git clone https://github.com/libgit2/libgit2 mylight
 
