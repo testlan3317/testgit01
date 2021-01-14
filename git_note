@@ -25,9 +25,24 @@ git help switch
 git help remote
 
 git add local files in the current folder:   git add .
-push to the remote git repo:       git push origin master
+push to the remote git repo:       
+            
+        git push origin master
 
 git diff     -- if you want to know exactly what you changed.
+
+Adding the -a option to the git commit command makes Git automatically stage every file that is already tracked before doing the commit.
+This actually let you skip the git add part:
+  
+       git commit -a -m 'Add new benchmarks'
+
+
+Removing Files:
+To remove a file from Git, you have to remove it from your tracked files (more accurately, remove it from your staging area) and
+then commit.  "git rm"
+
+
+git log
 
 
 If you want to clone the repository into a directory named something other than libgit2, you can specify the new directory name as additional argument:
