@@ -27,5 +27,76 @@ git help remote
 git add local files in the current folder:   git add .
 push to the remote git repo:       git push origin master
 
+git diff     -- if you want to know exactly what you changed.
+
+
+If you want to clone the repository into a directory named something other than libgit2, you can specify the new directory name as additional argument:
+git clone https://github.com/libgit2/libgit2 mylight
+
+Note: Git has a number of different transfer protocols you can use. The previous example uses the https:// protocol. 
+But, you may also see git:// or user@server:path/to/repo.git, which uses the SSH transfer protocol.
+
+-----------------------------------------------------------
+git status:
+untracked: means git sees a file you didn't have in previous snapshot (commit); Git won't start including it in your commit snapshots
+until you explicitly tell it to do so.
+
+In order to begin tracking a new file, you use the command git add. To begin tracking the README file.
+
+If you run your status command again, you can see that your README file is now tracked and staged. 
+You can tell that it's staged because it's under the "Changes to be Commited" heading.
+-----------------------------------------------------------
+
+git status -s : you get a far more simplified output from the command.
+
+ M README
+MM Rakefile
+A  lib/git.rb
+M  lib/simplegit.rb
+?? LICENSE.txt
+
+New files that aren't tracked have a ?? next to them
+New files have been added to the staging area have an A
+Modified files have an M
+Ther are two columns to the output - Left-hand column indicates the status of the staging area
+                                   - Right-hand column indicates the status of the working tree
+Radfile was modified, staged and then modified again. so there are changes to it that are both staged and unstaged.
+
+
+Ignoring Files
+You will have a class of files that you don't want Git to automatically add or even show you as being untracked. 
+$cat .gitignore
+*.[oa]
+*~
+The first line tells Git to ignore any files ending in ".o" or ".a" - object and archive files that may be the product of building
+your code.
+The second line tells Git to ignore all files whose names end with a tild(~), which is used by many text editors such as Emacs to mark
+temporary files.
+
+rules for the patterns you can put in the .gitignore file are as follows:
+- Blank lines or lines starting with # are ignored.
+- Standard glob patterns work, and will be applied recursively throughout the entire working tree.
+- You can start patterns with a forward slash (/) to avoid recursivity
+- You can end patterns with a forward slash (/) to specify a directory
+- You can negate a pattern by starting it with an exclamation point (!)
+
+Example:
+# ignore all .a files
+*.a
+
+# but do track lib.a , even though you're ignoring .a files above
+!lib.a
+
+# only ignore the TODO file in the current directory, not subdir/TODO
+/TODO
+
+# ignore all files in any directory named build
+build/
+
+# ignore doc/notes.txt, but not doc/server/arch.txt
+doc/*.txt
+
+# ignore all .pdf files in the doc/ directory and any of its subdirectories
+doc/**/*.pdf
 
 
