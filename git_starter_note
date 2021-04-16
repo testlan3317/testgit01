@@ -1,0 +1,244 @@
+Installing Git
+
+Before you start using Git, you have to make it availabe on your computer. Even if it's already installed, it's probably a good idea
+to update to the latest version. you can either install it as a package or via another installer, or download the source code and
+compile it yourself. 
+
+Install on Linux: (If you're on Fedora or any closely-related RPM-based distribution, such as RHEL or CentOS) you can use dnf:
+
+$sudo dnf install git-all 
+
+Git and GitHub
+A quick aside: git and GitHub are not the same thing. 
+
+Git is an open-source, version control tool created in 2005 by developers working on the LInux operating system;
+
+GitHub is a company founded in 2008 that makes tools which integrate with git. You do not need GitHub to use git, but you cannot
+use GitHub without using git. 
+
+Note: there are many other alternatives to GitHub, such as GitLab, BitBucker, and "host-your-own" solutions such as gogs and gittea.
+      All of these are referred to in git-speak as "remotes", and all are completely optional. 
+      You do not need to use a remote to use git, but it will make sharing your code with others easier.
+
+Step1: when creating a new project on your local machine using "git", you will first create a new "repository".
+       for example, if you have a 'projects' folder on your desktop, you'd do something like:
+
+	$cd ~/Desktop
+	$mkdir myproject
+	$cd myproject/
+       To initialize a git repository in the root of the folder, run the "git init" command:
+	$git init
+        initialized empty Git repository in /Users/mnelson/Desktop/myproject/.git/
+
+Step2: Add a new file to the repo:
+	$touch mnelson.txt
+       After creating the new file, you can use the "git status" command to see which files git knows exist.
+	$git status
+	on branch maste
+
+	Initial commit
+
+	Untracked files:
+	  (use "git add <file>..." to include in what will be committed)
+	
+		mnelson.txt
+	nothing added to commit but untracked files present (use "git add" to track)
+
+**An interlude: The staging environment, the commit, and you**
+
+One of the most confusing parts when you're first learning git is the concept of the staging environment and how it relates to a 
+commit. 
+
+A commit is a record of what changes you have made since the last time you made a commit. Essentially, you make changes to your 
+repo (for example, adding a file or modifying one) and then tell git to put those changes into a commit. 
+
+Commits make up the essence of your project and allow you to jump to the state of a project at any other commit. 
+
+so How do you tell git which files to put into a commit?
+This is where the "staging environment or index" come in. As seen in step2, when you make changes to your repo, "git" notices
+that a file has changed but won't do anything with it (like adding it in a commit)
+
+To add a file to a commit, you first need to add it to the "staging environment". 
+To do this, you can use the "git add <filename>" command (see step3 below).
+
+Once you've used the "git add" command to add all the files to the staging environment, you can then tell git to package them
+into a commit using the "git commit" command
+
+Step3: Add a file to the staging environment
+	$gid add mnelson.txt
+       After this, if you type "git status"
+	$git status
+	On branch master
+
+	Initial commit
+
+	Changes to be committed:
+	  (use "git rm --cached <file>..." to unstage)
+
+		new file: mnelson.txt
+
+Step4: Create a commit:
+	$git commit -m "This is my first commit!"
+	[master (root-commit) b345d9a] This is my first commit!
+	 1 file changed, 1 insertion(+)
+	 create mode 100644 mnelson.txt
+
+Step5: Create a new branch
+Now that you've made a new commit, let's try something a little more advanced. 
+Say you want to make a new feature but are worried about making changes to the main project while developing the feature. 
+This is where "git branches" come in.
+
+Branches allow you to move back and forth between 'states' of a project. 
+Offical git docs describe branches this way: 'A branch in Git is simply a lightweight movable pointer to one of these commits.'
+
+For instance, if you want to add a new page to your website you can create a new branch just for that page without affecting
+the main part of the project. 
+
+Once you're done with the page, you can "merge" your changes from your "branch" into the "primary branch". 
+
+when you create a new branch, Git keeps track of which commit your branch 'branched' off of, so it knows the history behind all
+the files. 
+
+Let's say you are on the primary branch and want to create a new branch to develop your web page. 
+Here's what you'll do: Run "git checkout -b <my branch name>". 
+This command will automatically create a new branch and then 'check you out' on it, 
+meaning git will move you to that branch, off the primary branch. 
+
+	$git checkout -b my-new-branch
+
+After running the above command, you can use the "git branch" command to confirm that your branch was created:
+	$git branch
+	master
+	* my-new-branch
+The branch name with the asterisk next to it indicates which branch you're on at that given time. 
+
+**A note on branch name**
+By default, every git repository's first branch is named 'master' (and is typically used as the primary branch in the project). 
+As part of the tech industry's general anti-racism work, some groups have begun to use alternate names for the default branch
+(we are using "primary" in this tutorial, for example)
+
+In other documentation and discussions, you may see "master", or other terms, used to refer to the primary branch. 
+Regardless of the name, just keep in mind that nearly every repository has a primary branch that can be thought of as the
+offical version of the repository.
+
+If you are curious about the decision to use different branch names, GitHub has an explanation of their change here:
+http://github.com/github/renaming
+
+Now, if you switch back to the primary branch and make some commits, your new branch won't see any of those changes until you 
+"merge" those changes onto your new branch. 
+
+Step6: Create a new repository on GitHub
+If you only want to keep track of your code locally, you don't need to use GitHub. But if you want to work with a team, you can 
+use GitHub to collaboratively modify the project's code. 
+
+**Note: when you're done filling out the information, press "create repository" button on GitHub website to make your new repo.
+	GitHub will ask if you want to create a new repo from scratch or if you want to add a repo you have created locally. 
+ 	In this case, since we've already created a new repo locally, we want to push that onto GitHub so follow the 
+	'... or push an existing repository from the command line' section:
+
+	$git remote add origin https://github.com/cubeton/mynewrepository.git
+	$git push -u origin master
+	Counting objects: 3, done. 
+	Writing objects: 100% (3/3), 263 bytes | 0 bytes/s, done.
+	Total 3 (delta 0), reused 0 (delta 0)
+	To https://github.com/cubeton/mynewrepository.git
+	* [new branch]        master -> master
+	Branch master set up to track remote branch master from origin. 
+
+(Personal understand: origin is the alias of https://github.com/cubeton/myrepository.git)
+(-u: means upstream, full indication is --set-upstream in the man git push page)
+
+Step7: Push a branch to GitHub
+Now we'll push the commit in your branch to your new GitHub repo. This allows other people to see the changes you've made.
+If they're approved by the repository's owner, the changes can then be merged into the primary branch.
+
+To push changes onto a new branch on GitHub, you'll want to run "git push origin yourbranchanme". GitHub will automatically
+create the branch for you on the remote repository:
+	$git push origin my-new-branch
+	Counting objects: 3, done
+	Delta compression using up to 8 threads.
+	Compressing objects: 100% (2/2), done.
+	Writing objects: 100% (3/3), 313 bytes | 0 bytes/s, done.
+	Total 3 (delta 0), reused 0 (delta 0)
+	To https://github.com/cubeton/mynewrepository.git
+	* [new branch]        my-new-branch -> my-new-branch
+
+(If this is your first time using GitHub locally, it might prompt you to log in with your GitHub username and password.)
+If you refresh the GitHub page, you'll see note saying a branch with your name has just been pushed into the repository.
+You can also click the 'branches' link to see your branch listed there.
+
+Step8: Create a pull request (PR)
+A pull request (or PR) is a way to alert a repo's owners that you want to make some changes to their code. It allows them
+to review the code and make sure it looks good before putting your changes on the primary branch. 
+
+After you've submitted the PR request, you might see a big green button at the bottom that says "Merge pull request".
+Clicking this means you'll merge your changes into the primary branch.
+ 
+**Note: Sometimes you'll be a co-owner or the sole owner of a repo, in which case you may not need to create a PR to merge
+	your changes. However, it's still a good idea to make one so you can keep a more complete history of your updates
+	and to make sure you always create a new branch when making changes.
+
+Step9: Merge a PR
+Go ahead and click the green "Merge Pull request" button. This will merge your changes into the primary branch.
+when you're done, I recommend deleting your branch (too many branches can become messy), so hit that grey "Delete branch"
+button as well.
+
+You can double check that your commits were merged by clicking on the 'Commits' link on the first page of your new repo.
+This will show you a list of all the commits in that branch. You can see the one I just merged right up top 
+(Merge pull request #1)
+
+You can also see the "hash code" of the commit on the right hand side. A hash code is a unique identifier for that specific
+commit. It is useful for referring to specific commits and when undoing changes 
+(use the "git revert <hash code number>" command to backtrack).
+
+Step10: Get changes on GitHub back to your computer
+In order to get the most recent changes that you or others have merged on GitHub, use the "git pull origin master" command
+(when working on the primary branch). In most cases, this can be shortened to "git pull".
+	$git pull origin master
+	remote: Couting objects: 1, done.
+	remote: Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
+	Unpacking objects: 100%(1/1), done.
+	From https://github.com/cubeton/mynewrepository
+	* branch 	master   -> FETCH_HEAD
+	b345d9a.5381b7c	master   -> origin/master
+	Merge made by the 'recursive' strategy.
+	mnelson.txt | 1 +
+	1 file changed, 1 insertion (+)
+
+This shows you all the files that have changed and how they've changed. 
+
+Now we can use the "git log" command again to see all new commits:
+	$git log
+	commit  3e27234u234ui23423423423c
+	Merge: 4f1cc17 5381b7c
+	Author: Megan Nelson <mnelson@hubsoer.com>
+	Date:	Fri Oct 11 17:48:30 2016 -0409
+	
+	  Merge branch 'master' of https://github.com/cubeton/mynewrepository
+
+-------------------------------------------
+Some syntax:
+
+git checkout -b <branch-name>  #create a new branch and check it out
+The remote branch is automatically created when you push it to the remote server.
+
+git push <remote-name> <branch-name>
+where <remote-name> is typically origin. 
+Note however the formally, the format is:
+
+git push <remote-name> <local-branch-name>:<remote-branch-name>
+But when you omit one, it assumes both branch names are the same. Having said this, as a word of caution, do not make
+the critical mistake of specifying :<remote-branch-name> (with the colon), or the remote branch will be deteled. 
+
+git push --set-upstream <remote-name> <local-branch-name>
+This command equals "git push -u <remote-name> <local-branch-name>"
+
+Git Branching - Basic Branching and Merging:
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+-----------------
+Difference between "git add -A" and "git add ."
+- git add -A : stages all changes
+- git add . : stages new files and modifications, without deletions (on the current directory and its subdirectories).
+- git add -u : stages modifications and deletions, without new files. 
+- git add -A is equivalent to git add . ; git add -u ( two commands combine together)

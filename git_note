@@ -12,7 +12,7 @@ Note: when you run git clone <repo_url> to clone a repository, the default remot
       You need to set it up by yourself
 
       git remote add origin <repo_url>
-
+Jgit@321
 repo_url is the path to an existing remtoe repository which you want to exchange data with. if it's in the local disk, it could be:
 file://home/me/foo.git or /home/me/foo.git. If it's hosted in Github, it could be https://github.com/me/foo.git 
 or ssh://git@github.com/me/foo.git
@@ -85,7 +85,7 @@ revert it back to what it looked like when you last commited
 
 Fetching:   $git fetch <remote>
 
-If you clone a repository, the command automatically adds that remote repository under the name "orogin".  
+If you clone a repository, the command automatically adds that remote repository under the name "origin".  
 
 Note: It's important to note that the git fetch command only downloads the data to your local repository -- it does not automatically
 merge it with any of your work or modify what your're currently working on. You have to merge it manually into your work when it's ok.
