@@ -1,0 +1,17 @@
+#create a new repository on the command line
+
+echo "# testlan3317" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/testlan3317/testlan3317.git
+git push -u origin main
+
+# ... or push an existing repository from the commnad line
+git remote add origin https://github.com/testlan3317/testlan3317.git
+git branch -M main
+git push -u origian main
+
+#... or import code from another repository
+# you can initialize this repository with code form a Subversion, Mercurial, or TFS project
