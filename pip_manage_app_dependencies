@@ -1,0 +1,46 @@
+Managing Application Dependencies:
+This tutorial walks you through the use of "Pipenv" to manage dependencies for an applicaiton.
+It will show you how to install and use the necessary tools and make strong recommendations on best practices. 
+
+Install Pipenv
+
+Pipenv is a dependency manager of Python projects. If you're familiar with Node.js 'npm' or Ruby's bundler, it is similar
+in spirit to those tools. 
+while pip is often sufficient for personal use, Pipenv is recommended for collaborative projects as it's a higher-level tool 
+that simplifies dependency management for common use cases. 
+
+1. use pip to install Pipenv
+    python3 -m pip install --user pipenv
+
+Installing packages for your project:
+Pipenv manages dependencies on a per-project basis. To install packages, change into your project's directory
+(or just an empty directory for this tutorial) and run:
+
+cd myproject
+pipenv install requests
+
+Pipenv will install the "Requests" library and create a Pipfile for you in your project's directory. The "Pipfile" is used to
+track which dependencies your project needs in case you need to re-install them, such as when you share your project with 
+others. 
+
+Using installed packages:
+Now that Requests is installed you can create a simple "main.py" file to use it:
+scritps as below:
+import requests
+
+response = request.get('https://httpbin.org/ip')
+
+print('Your IP is {0}'.format(response.json()['origin']))
+
+Then you can run this script using "pipenv run":
+
+pipenv run python main.py
+
+You should get output similar to this:
+
+Your IP is 8.8.8.8
+
+Using "pipenv run" ensures that your installed packages are available to your script. It's also possible to spawn a new shell
+that ensure all commands have access to your installed packages with "pipenv" shell. 
+
+
