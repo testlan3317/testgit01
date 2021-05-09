@@ -1,0 +1,162 @@
+Pip is already installed if you are using Python2 >= 2.7.9 or Python3 >= 3.4 downloaded from python.org
+or if you working in a Virutal Environment created by "virtualenv" or "venv". just make sure to upgrade pip. 
+
+1. use this command to check whether pip is installed:
+    $python -m pip --version
+
+2. To manually install pip, refer to this link: https://pip.pypa.io/en/stable/installing/
+
+3. upgrading pip
+   1. Unix/macos     python -m pip install -U pip
+   2. windows        python -m pip install --upgrade pip / py -m pip install -U pip
+
+
+Install a package with Pip:
+1. download package from PyPI (http://pypi.org)
+
+2. install the package with pip:
+    python -m pip install Somepackage
+
+3. show what files were installed
+    python -m pip show  --files Somepackage
+
+4. list what packages are installed
+    python -m pip list
+
+5. list what packages are outdated
+    python -m pip list --outdated
+
+6. Upgrade a package
+    python -m pip install --upgrade Somepackage
+
+7. Uninstall a package
+    python -m pip uninstall Somepackage
+
+8. Searching for Packages
+    python -m pip search "query"
+
+Ensure you can run pip from the command line
+    python3 -m pip --version 
+    if you set the alias python='/usr/bin/python3.6', you can also do as 
+               python -m pip --version
+
+
+Ensure pip, setuptools, and wheel are up to date
+while pip alone is sufficient to install from pre-build binary archives, up to date copies of the "setuptools" and "wheel" projects
+are useful to ensure you can also install from source archives:
+         python -m pip install --upgrade pip setuptools wheel
+
+Optionally, create a virtual environment:
+
+how to?
+python3 -m venv tutorial_env
+source tutorial_env/bin/activate
+
+This will create a new virtual environment in the "tutorial_env" subdirectory, and configure the current shell to use it 
+as the default python environment. 
+
+Creating Virtual Environments:
+Python "virtual Environments" allow Python packages to be installed in an isolated locaiton for a particular applicaiton, rather
+than being installed globally. 
+
+If you are looking to safely install global command line tools, see "Installing stand alone command line tools"
+http://packaging.python.org/guides/installing-stand-alone-command-line-tools/
+
+Virtual Environments have their own installation directories and they don't share libraries with other virutal environments. 
+
+Currently, there are two common tools for creating Python virtual environments:
+
+- "venv" : is available by default in Python 3.3 and later, and installs "pip" and "setuptools" into created virtual environments
+           in python 3.4 and later. 
+
+- "virtualenv" : needs to be installed separately, but supports Python 2.7+ and Python 3.3+, and "pip", "setuptools" and "wheel"
+                 are always installed into created virtual environments by default (regardless of Python version).
+
+ 
+how to use "virtualenv"?
+ 1. install virtualenv 
+    $ pip install virtualenv
+ 2. list global site packages at specific version
+    $ pip list
+ 3. to use virtualenv, 1st make a directory
+    $ mkdir Environments
+ 4. go into the directory
+    $ cd Environments
+ 5. create a virtual environment
+    $ virtualenv project1_env
+ 6. you can use ls to see what's install inside the direcotry "Environment"
+ 7. active the new virutal python enviornment, you can use source + "virutal environment name"/bin/activate
+    $ source project1_env/bin/activate
+ 8. if you type "which python", you can see the python is actually in our virutal environment
+ 9. if you do "pip list", you can find we only have pip and setup tools, we don't have all those global packed site packages
+    that were listed earlier.
+ 10.let's install few packages in this new virtual python environment
+    $ pip install numpy
+    $ pip install pytz
+    $ pip install psutil
+ 11. now you can see all the package installed in this environment with "pip list"
+ 12. now let's say we want export what we are using in this project, and use these in anohter project. 
+ 13. we can use 
+    $ pip freeze --local > requirements.txt    
+    (--local: means it only take the local dependencies you had in this virtual environment, 
+       if we don't add this, it will take global)
+ 14. we can check the file dependencies with " cat requirements.txt"
+ 15. if you want to get out of this virtual environment, 
+    $ deactivate
+ 16. if you want to get rid of previous created virtual environment
+    $ rm -rf project1_env1
+ 17. create anohter one if you want , and we can test the requirements.txt 
+    $ virtualenv -p /usr/bin/python2.6 py26_env
+     (-p: use specific version of python we want to use)
+ 18. then we can see the py26_env with "ls" command
+ 19. we can use 
+     $ source py26_env/bin/activate
+ 20. then we could test with "which python", we will find it uses the python inside the virtual environment
+ 21. if we type "python --version", we'll find it uses python2.6.9
+ 22. so with that requirements.txt, we can do the install 
+     $ pip install -r requirements.txt
+ 23. then we do "pip list", we can see all the packages we had in the requirements.txt
+ 24. you can exit with "deactivate"
+
+Note: these virtual environments ,they are meant to be environments for your dependencies and your packages and things like that.
+      but not for your project files, you wouldn't want to go in and start building your project files within your virutal 
+      environment because you want to be able to pass these along and throw them away whenever you want. 
+      You don't want to have all of your project files in these virtual environments. 
+      They are really just intended to separate out the packages dependencies and the versions that you're going to use from 
+      project to project. 
+
+Install Python Modules: -2nd
+
+Install packages just for the current user?
+Passing the "--user" option to python -m pip install will install a package just for the current user, rather than for all users
+of the system. 
+
+Install scientific Python packages?
+A number of scientific Python packages have complex binary dependencies, and aren't currently easy to install using "pip" directly.
+
+At this point in time, it will often be easier for users to install these packages by "other means" rather than attempting to install
+them with pip. 
+
+see also: Python Packaging User Guide: Installing Scientific Packages
+          https://packaing.python.org/guides/installing-scientific-packages/
+
+It is also possible to specify an exact or minimum version directly on the command line. when using comparator operator such 
+as ">", "<" or some other special character which get interpreted by shell, the package name and the version should be enclosed
+with double quotes. 
+
+python -m pip install SomePackage==1.0.4   # specific version
+python -m pip install "SomePackage>=1.0.4" # minimum version
+
+
+Work with multiple versions of Python installed in parallel?
+On Linux, Mac OS X, and other POSIX system, use the versioned Python commands in combination with the -m switch to run the 
+appropriate copy of pip.
+
+python2 -m pip install SomePackage # default Python 2
+python2.7 -m pip install SomePackage # specifically Python 2.7
+python3 -m pip install SomePackage # default python3
+
+
+
+
+
