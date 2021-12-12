@@ -1,0 +1,137 @@
+We could use square brackets and numeric comparision operators to perform the actual evaluation. 
+Using echo $? command, we check for a return value of the previously executed evaluation. 
+There are two possible outcomes for every evaluation, true or false. If the return value is equal to 0, then the comparison evaluation
+is ture. However, if the return value is equal to 1, the evaluation resulted as false. 
+
+$ [ $a -lt $b ]
+$ echo $?
+
+
+Redhat Linux uninstall the old version and  install new version of apache:
+
+rpm -qa | grep -i httpd
+service httpd stop
+
+rpm -e httpd-manual-2.0.40-21 --nodeps
+rpm -e httpd-2.0.40-21 --nodeps
+rpm -e redhat-config-httpd-1.0.1-18 --nodeps
+
+rpm -e: means uninstall
+--nodeps: means do not check dependencies
+
+./configure --help  : can read the help info and configure the path as well as the module. 
+
+make: compile, it will generate the "MakeFile" file
+make install: based on what are "configure" and "make" to install the software
+
+./configure --prefix=/usr/local/zlib
+--prefix: means configure the software under /usr/local/zlib path
+
+calculate the software claimed file size: 
+
+du -shm zlib.2.x.x
+--------------------------------------------------
+
+GCC install apache server source code example (old version):
+
+./configure \
+--prefix=/usr/loca/apache2 \
+--sysconfdir=/etc/httpd \
+--with-z=/usr/local/zlib/ \
+--disable-userdir \
+--enable-so \
+--enable-deflate=shared \
+--enable-expires=shared \
+--enable-rewrite=shared \
+--enable-static-support
+
+make && make install
+-------------------------------------------------
+
+netstat -tnl : to check the opened port
+
+------------------------------------------------
+Get A list of available apache module:
+apt search libapache2-mod
+
+Add python support module:
+
+apt install libapache2-mod-python
+
+enable module:
+a2enmod libapache2-mod-python
+
+disable module:
+a2dismod libapache2-mod-python
+
+systemctl restart apache2
+
+Apache is able to host more than one website under the same server. in order to facilitate that, there is a feature called name-based 
+virtual host. 
+
+a2ensite : enable a site
+a2dissite : disable a site
+
+how to know which site installed on your web server:
+ls /etc/apache2/sites-avaiable
+
+a2dissite 000-default
+
+systemctl reload apache2
+
+How to create a custom site: (create one under the same folder: /etc/apache2/sites-available/example.net.conf
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@example.net
+	ServerName example.net
+	ServerAlias www.example.net
+	DocumentRoot /srv/www/example.net/public_html/
+	ErrorLog /srv/www/example.net/logs/error.log
+	CustomLog /srv/www/example.net/logs/access.log combined
+</VirtualHost>
+
+create another one to explain the server could host more than one website : /etc/apache2/sites-available/example.org.conf
+
+<VirtualHost *:80>
+	ServerAdmin admin@example.org
+	ServerName example.org
+	ServerAlias www.example.org
+	DocumentRoot /srv/www/example.org/public_html/
+	ErrorLog /srv/www/example.org/logs/error.log
+	CustomLog /srv/www/example.org/logs/access.log combined
+
+	<--Enable Perl-->
+	Options ExecCGI
+	AddHandler cgi-script .pl
+</VirtualHost>
+
+mkdir -p /srv/www/example.net/public_html
+mkdir -p /srv/www/example.org/public_html
+mkdir -p /srv/www/example.org/logs
+mkdir -p /srv/www/esample.net/logs
+
+a2ensite example.net
+a2ensite example.org
+
+systemctl reload apache2
+
+
+------------------------------------------------
+To list the files installed by a package (this will show the path as well):
+dpkg -L <packagename>
+
+This shows the files simply copied to those locations. These files are marked as managed by the package management. 
+
+Additionaly, sometimes some files are created/modifed by pre-/postinstall and pre-/postrm scripts included in the package. You can
+find the scripts in "/var/lib/dpkg/info" once the package is installed.
+
+
+All of these deal with arithmetic, but in different ways and the variable is created via different means. Some of these are specific to bash shells, while others aren't.
+
+    $((...)) is called arithmetic expansion, which is typical of the bash and ksh shells. This allows doing simple integer arithmetic, no floating point stuff though. The result of the expression replaces the expression, as in echo $((1+1)) would become echo 2
+    ((...)) is referred to as arithmetic evaluation and can be used as part of if ((...)); then or while ((...)) ; do statements. Arithmetic expansion $((..)) substitutes the output of the operation and can be used to assign variables as in i=$((i+1)) but cannot be used in conditional statements.
+    $[...] is the old syntax for arithmetic expansion which is deprecated. See also. This was likely kept so that old bash scripts don't break. This didn't work in ksh93, so my guess is that this syntax is bash-specific. NOTE: spaces are very important here; don't confuse $[1+1] with stuff like [ $a -eq $b ]. The [ with spaces is known as the test command, and you typically see it in decision-making parts. It is very different in behavior and purpose.
+    let is a bash and ksh keyword which allows for variable creation with simple arithmetic evaluation. If you try to assign a string there like let a="hello world" you'll get a syntax error. Works in bash and ksh93.
+    $(...) is command substitution, where you literally take the output of a command and assign to a variable. Your command here is expr, which takes positional arguments, like expr arg1 arg2 arg3, so spaces are important. It's sort of like a small command-line calculator for integer arithmetic, plus some true/false and regex type of stuff. This is a shell-neutral command.
+
+ 

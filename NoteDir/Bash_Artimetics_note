@@ -1,0 +1,50 @@
+Bash Arithmetics
+Arithmetics in bash scripting will add another level of sophistication and flexibility to our scripts as it allows us to calculate
+numbers even with numeric precision.
+
+Arithmetic Expansion:
+The arithmetic expansion is probably to the most simple method on how to achieve basic calculation. 
+we just enclose any mathmetical expression inside double parentheses "(())"
+
+$ a=$(( 12+5 ))
+$ echo $a
+
+expr command: 
+Another alternative to arithmetic expansion is the "expr" command. Using the expr command allows us to perform an arithmetic
+operation even without enclosing our mathematical expression within brackets or quotes. 
+However, do not forget to escape asterisk multiplicaton sign to avoid "expr: syntax error"
+
+$ expr 2 + 2
+$ expr 6 \* 6
+
+let command:
+similarly, as with expr command, we can perform bash arithmetic operations with "let" command. 
+"let" command evaluates a mathematical expression and stores its result into a variable. 
+
+the following example shows some basic operations using "let" command as well as integer increment and exponent operations like x3:
+
+$ let a=2+2
+$ echo $a
+
+$ let b=4*($a-1)
+$ echo $b
+
+$ let c=($b**3)/2
+$ echo $c
+
+$ let c++
+$ echo $c
+
+$ let c--
+$ echo $c
+
+bc command:
+it is used to deal with precion decimal calculation. 
+$ echo '8.5 / 2.3'|bc
+3
+$ echo 'scale=2;8.5 /2.3'|bc
+3.69
+
+scale: means how many digitals after the decimal. 
+
+
