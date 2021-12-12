@@ -1,0 +1,23 @@
+git config -l
+
+1. Get into the Directory that you want to create a branch
+
+2. use command: "git init" to init the local repository
+
+3. use command: "git remote add origin https://yourrepo.git" to add your remote master repository to the local
+
+4. create your own branch with command "git checkout -b bashNote" in this example
+
+5. create bunch of files and then check the status with the command "git status"
+
+6. stage all the added files with command "git add ."
+
+7. make an commitment with the command "git commit -m "add some notes" "
+
+8. check the staged files with the command "git status"
+
+9. push the local new created branch bashNote with the command 
+
+"git push https://<GitHub_Access_token>@github.com/<GitHub_Username>/<Repository_name>.git"
+
+
