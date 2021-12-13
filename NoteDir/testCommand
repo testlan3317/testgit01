@@ -1,0 +1,15 @@
+ip addr | grep inet | egrep -i '(*wlp*|*virb*)'
+
+ip addr | grep inet | egrep -i '(*wlp*|*virb*)' | awk '{print $0}'
+
+#this will print the whole line
+
+ip addr | grep inet | egrep *wlp* | awk '{print $1 $2}'
+
+ip addr | grep inet | egrep *wlp* | awk '{print $1"\t"$2}'
+
+----------------------------------------------------
+# This will grep the product manufacturer, product and serial number
+sudo dmidecode -t system | grep -E '(Manufacturer | Product | Serial)'
+
+sudo dmidecode -s bios-vendor
