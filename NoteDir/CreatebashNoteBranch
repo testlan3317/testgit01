@@ -19,5 +19,34 @@ git config -l
 9. push the local new created branch bashNote with the command 
 
 "git push https://<GitHub_Access_token>@github.com/<GitHub_Username>/<Repository_name>.git"
+----------------------
+
+switch branch: 
+git switch <branchName>
+
+delete branch:
+git branch -d <branchName>
+
+check the remote branch name
+git branch -r
+
+merge branch:
+
+git switch <the branch which will be merged in>
+
+git merge <branchName>
+
+git merge <branchName> --allow-unrelated-histories
+
+
+---------------------
+
+If your Local branch and remote branch is the same name then you can just do it:
+
+git push origin branchName
+
+when your local and remote branch name is different then you can just do it:
+
+git push origin localBranchName:remoteBranchName
 
 
