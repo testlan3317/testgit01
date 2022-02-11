@@ -1,0 +1,331 @@
+Multicast traffic provides one-to-many communciation, where only one data packet is sent on a link as needed and then is replicated between links as the data forks(splits) on a network device along the multicast distribution tree (MDT).
+
+Stream: the data packets are known as a stream that uses a special destination IP address, known as "group address".
+A server for a stream still manages only one session, and network devices selectively request to receive the stream.
+
+receivers: Receipient devices of a multicast stream are known as receivers. 
+common applications that take advantage of multicast traffic include Cisco TelePresence, real-time video, IPTV etc.
+
+
+The most important multicast blocks:
+- Local network control block (224.0.0.0/24): Addresses in the local network control block are used for protocol control traffic that is not forwarded out a broadcast domain. 
+Example of this type of multicast control traffic are all hosts in this subnet (224.0.0.1), all routers in this subnet (224.0.0.2), and all PIM routers(224.0.0.13).
+
+- Internet-work contorl block(224.1.1.0/24): Addresses in the internet-work control block are used for protocol control traffic that may be forwarded through the Internet.
+Examples include Network Time Protocol(NTP)(224.0.1.1), Cisco-RP-Announce(224.0.1.39), and Cisco-RP-Discovery(224.0.1.40).
+
+well-known Reserved Multicast Addresses
+224.0.0.0		Base address (Reserved)
+224.0.0.1		All hosts in this subnet(all-hosts group)
+224.0.0.2		All routers in this subnet
+224.0.0.5		All OSPF routers(AllSPFRouters)
+224.0.0.6		All OSPF DRs (AllDRouters)
+224.0.0.9		All RIPv2 routers
+224.0.0.10		All EIGRP routers
+224.0.0.13		All PIM routers
+-------------------------
+VRRP	        224.0.0.18
+IGMPv3	        224.0.0.22
+HSRPv2 and GLPB	224.0.0.102
+NTP		224.0.1.1
+Cisco-RP-Announce(Auto-RP)	224.0.1.39
+Cisco-RP-Discovery(Auto-RP)	224.0.1.40
+
+- Source Specific Multicast (SSM) block(232.0.0.0/8): This is the default range used by SSM. SSM is a PIM extension described in RFC 4607.
+SSM forwards traffic to receivers from only those multicast sources for which the receivers have explicitly expressed interest; it's primary targeted to one-to-many applications.
+
+GLOP block(233.0.0.0/8): Addresses in the GLOP block are globally scoped statically assigned addresses. 
+The assignment is made for domains with a 16-bit autonomous system number (ASN) by mapping the domain's ASN by mapping the domain's ASN, expressed in octets as X.Y, into the middle two octets of the GLOP block, yielding an assignment of 233.X.Y.0/24. 
+The mapping and assignment are defined in RFC 3180. Domains with 32-bit ASN may apply for space in ad-hoc block III or can consider using IPv6 multicast addresses.
+
+- Administratively scoped block(239.0.0.0/8): These addresses, described in RFC2365, are limited to a local group or organization. These addresses are similar to the reserved IP unicast ranges(such as 10.0.0.0/8) defined in RFC 1918 and will not be
+assigned by the IANA to any other group or protocol. in other words, network administrators are free to use multicast addresses in this range inside of their domain without worrying about conflicting with others elsewhere.
+Even through SSM is assigned to the 232.0.0.0/8 range by default, it is typically deployed in private networks using the 239.0.0.0/8 range.
+
+Every multicast group address (IP address) is mapped to a special MAC address that allows Ethernet interfaces to identify multicast packets to a specific group.
+
+A LAN segment can have multiple streams, and a receiver knows which traffic to send to the CPU for processing based on the MAC address assigned to the multicast traffic.
+
+The first 24 bits of a multicast MAC address always start with 01:00:5E. The low-order bit of the first byte is the individual/group bit (I/G) bit, also known as the unicast/multicast bit, and when it is set to 1, it indicates that the frame is a multicast frame, and the 25th bit is always 0. The lower 23 bits of the multicast MAC address are copied from the lower 23 bits of the multicast group IP address.
+
+note: when a receiver wants to receive a specific multicast feed, it sends an IGMP join using the multicast IP group address for that feed. 
+The receiver reprograms its interface to accept the multicast MAC group address that correlates to the group address.
+
+for example, a PC could send a join to 239.255.1.1 and would reprogram its NIC to receive 01:00:5E:7F:01:01.
+If the PC were to receive an OSPF update sent to 224.0.0.5 and its corresponding multicast MAC 01:00:5E:00:00:05, it would ignore it and eliminate wated CPU cycles by avoiding the processing of undesired multicast traffic.
+
+IGMP is the protocol that receivers use to join multicast groups and start receiving traffic from those groups.
+IGMP must be supported by receivers and the router interfaces facing the receivers.
+When a receiver wants to receive multicast traffic from a source, it sends an IGMP join to its router. If the router does not have IGMP enabled on the interface, the request is ignored.
+ 
+3 version of IGMP: IGMPv1 is old and rarely used. IGMPv2 is common used in most multicast network 
+IGMPv3 which is used by SSM. 
+------------------
+
+when a receiver wants to receive a multicast stream, it sends an unsolicited membership report, commonly referred to as an IGMP join, to the local router for the group it wants to join(for example, 239.1.1.1). The local router then sends this request
+upstream toward the source using a PIM join message. when the local router starts receiving the multicast stream, 
+it forwards it downstream to the subnet where the receiver that requested it resides.
+
+Note: IGMP join is not a valid message type in the IGMP RFC specifications, but the term is commonlyh used in the field
+in place of IGMP memberhsip reports because it is easier to say and write.
+-----------------
+
+note: if there is more than one router in a LAN segment, an IGMP querier election takes place to determine which router will be the querier. IGMPv2 routers send general membership query messages with their interface address as the source IP address and destined to the 224.0.0.1 multicast address. 
+
+when an IGMPv2 router receives such a message, it checks the source IP address and compares it to its won interface IP address. The router with the lowerest interface IP address in the LAN subnet is elected as the IGMP querier. all the non-querier
+routers start a timer that resets each time they receive a membership query report from the querier router.
+
+If the querier router stops sending membership queries for some reason(for instance, if it is powered down), a new querier election takes place. A non-querier router waits twice the query interval, which is by default 60 seconds, and if it has heard no queries from the IGMP querier, it triggers IGMP querier election)
+
+IGMPv3:
+In IGMPv2, when a receiver sends a membership report to join a multicast group, it does not specify which source it would like to receive multicast traffic from. 
+
+IGMPv3 is an extension of IGMPv2 that adds support for multicast source filtering, which gives the receivers the capability to pick the source they wish to accept multicast traffic from.
+
+IGMPv3 is designed to coexist with IGMPv1 and IGMPv2. 
+
+IGMPv3 supports all IGMPv2's IGMP message types and is backward compatible with IGMPv2. 
+The differences between the two are the IGMPv3 added new fields to the IGMP membership query and introduced a new IGMP message type called Version 3 membership report to support source filtering.
+
+IGMPv3 supports applications that explicitly signal sources from which they want to receive traffic. 
+With IGMPv3, receivers signal membership to a multicast group address using a membership report in the following two mode:
+
+- Include mode: In this mode, the receiver announces membership to a multicast group address and provides a list of source addresses (the include list) from which it wants to receive traffice.
+
+- Exclude mode: In this mode, the receiver announces membership to a multicast group address and provides a list of source addresses (the exclude list) from which it does not want to receive traffic. The receiver then receives traffic only from sources whose IP addresses are not listed on the exclude list. To receive traffic from all sources, which is the behavior of IGMPv2, a receiver uses exclude mode membership with an empty exclude list. 
+
+Note: IGMPv3 is used to provide source filtering for Source Specific Multicast (SSM)
+
+IGMP Snooping:
+To optimize forwarding and minimize flooding, switches need a method of sending traffic only to interested receivers. 
+In thi case of unicast traffic, Cisco switches learn about Layer 2 MAC addresses and what ports they belong to by 
+inspecting the Layer2 MAC address source; they store this information in the MAC address table. If they receive a 
+Layer 2 frame with a destination MAC address that is not in this table, they treat it as an unknown frame and flood it
+out all the ports within the same VLan except the interface the frame was received on. 
+
+Uninterested workstations will notice that the destination MAC address in frame is not theirs and will discard the packet.
+
+Note: the case of multicast traffic, multicast MAC address is never used as a source MAC address. Switches treat multicast
+MAC addresses as unknown frames and flood them out all ports; all workstations then process these frame.It is then up to
+workistations to select interested frames for processing and select the frames that should be discarded. 
+
+The flooding of multicast traffic on a switch wastes bandwidth utilization on each LAN segment. 
+
+Cisco switches use two methods to reduce multicast flooding on a LAN segment:
+- IGMP snooping
+- Static MAC address entries
+
+IGMP snooping, defined in RFC 4541, is the most widely used method and works by examining IGMP joins sent by receivers
+and maintaining a table of interfaces to IGMP joins. When the switch receives a multicast frame destined for a multicast
+group, it forwards the packet only out the ports where IGMP joins were received for that specific multicast group.
+
+
+- A multicast static entry can also be manually programmed into the MAC address table, but this is not a scalable solution
+because it cannot react dynamically to changes; for this reason, it is not a recommended approach.
+
+PIM (Protocol Independent Multicast)
+A multicast routing protocol is necessary to route the multicast traffic throughout the network so that routers can
+locate and request multicast stream from other routers. Multiple multicast routing protocols exist, but 
+Cisco fully supports only Protocol Independent Multicast (PIM).
+
+*PIM is a multicast routing protocol that routes multicast traffic between network segments. PIM can use any of the 
+unicast routing protocols to identify the path between the source and receivers.
+
+PIM Distribution Trees:
+Multicast routers create distribution trees that define the path that IP multicast traffic follows through the network
+to reach the receivers. 
+The two basic types of multicast distribution trees are source trees, also known 
+as SPTs(shortest path tree), and shared tree.
+
+
+Source Trees:
+A source tree is a multicast distribution tree where the source is the root of the tree, and branches form a 
+distribution tree through the network all the way down to the receivers. 
+
+When this tree is built, it uses the shortest path through the network from the source to the leaves of the tree;
+for this reason, it is also referred to as a shortest path tree(SPT). 
+
+The forwarding state of the SPT is known by the notation(S,G), pronounced "S comma G", where S is the source of the
+multicast stream (server), and G is the multicast group address.
+
+Using this notation, the SPT state for the example is (10.1.1.2,239.1.1.), where the multicast source S is 10.1.1.2,
+and the multicast group G is 239.1.1.1, joined by Receivers A and B.
+
+Shared Trees:
+A shared tree is a multicast distribution tree where the root of the shared tree is not the source but a router
+designated as the rendezvous point(RP). For this reason, shared trees area also referred to as RP trees(RPTs). 
+
+Multicast traffic is forwarded down the shared tree according to the group address G that the packets are addressed
+to, regardless of the source address. For this reason, the forwarding state on the shared tree is referred to by
+the notation (*.G), pronounced "star comma G."
+
+note: In any-source multicast(ASM), the (S,G) state requires a parent(*,G). 
+one of the benefits of shared trees over source trees is that they require fewer multicast entries(for example, S,G
+and *,G). For instance, as more sources are introduced into the network, sending traffic to the same multicast group,
+the number of multicast entries for R3 and R4 always remains the same:(*, 239.1.1.1).
+
+The major drawback of shared trees is that the receivers areceive traffic from all the sources sending traffic to the
+same multicast group. Even though the receiver's applications can filter out the unwanted traffic, this situation still
+generates a lot of unwanted network traffic, wasting bandwidth. In addition, because shared trees can allow multiple
+sources in an IP multicast group, there is a potential network security issue because unintended sources could send
+unwanted packets to receivers.
+
+Reverse Path Forwarding(RPF) interface: The interface with the lowerest-cost path(based on administrative distance and 
+metic) to the IP address of the source (SPT) or the RP, in the case of shared trees. If multiple interfaces have the
+same cost, the interface with the highest IP address is chosen as the tiebreaker.
+
+RPF neighbor: The PIM neighbor on the RPF interface.
+upstream: Toward the source of the tree, which could be actual source in source-based trees or the RP in the shared trees.
+
+upstream interface: the interface toward the source of the tree. It is also knonw as the RPF interface or the incoming
+interface(IIF).
+
+Downstream: Away from the source of the tree and toward the receivers.
+Downstream interface: Any interface that is used to forward multicast traffic down the tree, also known as an outgoing
+interface (OIF). 
+
+outgoing interface list (OIL)
+
+Last-hop router(LHR): A router that is directly attached to the receivers, also known as a leaf router. It's 
+responsible for sending PIM joins upstream toward to the RP or to the source.
+
+First-hop router(FHR): A router that is directly attached to the source, also known as a root router. It's
+responsible for sending register message to the RP.
+
+Multicast Routing Information Base(MRIB): A topology table that is also known as the multicast route table(mroute),
+which derives from the unicast routing table and PIM. 
+
+MRIB contains the Source S, group G, incoming interfaces (IIF), outgoing interfaces (OIFs), and RPF neighbor 
+information for each multicast route as well as other multicast-related information.
+
+Multicast Forwarding Information Base(MFIB): A forwarding table that uses the MRIB to program multicast forwarding
+Information in hardware for faster forwarding. 
+
+Multicast state: The multicast traffic forwarding state that is used by a router to forward multicast traffic.
+The multicast state is composed of the entries found in the mroute table (S, G, IIF, OIF, and so on).
+
+
+There are currently five PIM operating modes:
+- PIM Dense Mode (PIM-DM)
+- PIM Sparse Mode (PIM-SM)
+- PIM Sparse Dense Mode
+- PIM Source Specific Multicast (PIM-SSM)
+- PIM Bidirectional Mode (Bidir-PIM)
+
+Note: PIM-DM and PIM-SM are also commonly referred to as any-source multicast(ASM)
+
+All PIM control messages use the IP protocol number 103; they are either unicast (that is, register and register stop
+messasges) or multicast, with a TTL of 1 to the all PIM routers address 224.0.0.13.
+
+PIM Dense Mode:
+PIM routers can be configured for PIM Dense Mode(PIM-DM) when it is safe to assume that the receivers of a multicast
+group are located on every subnet within the network - in other words, when the multicast group is densely populated
+across the network. 
+
+For PIM-DM, the multicast tree is built by flooding traffic out every interface from the source to every "Dense Mode"
+router in the network. The tree is grown from the root toward the leaves. As each router receives traffic for the 
+multicast group, it must decide whether it already has active receivers wanting to receive the multicast traffic. 
+If so, the router remains quiet and lets the multicast flow continue. 
+
+If no receivers have requested the multicast stream for the multicast group on the LHR, the router sends a prune 
+message toward the source. That branch of the tree is then pruned off so that the unnecessary traffic does not 
+continue. 
+
+The resulting tree is a source tree because it is unique form the source to the receivers.
+
+note: packets arriving via the non-RPF interface are discarded.
+
+The non-RPF multicast flows are normal for the initial flooding of multicast traffic and are corrected by the normal
+PIM-DM pruning mechanism.
+
+The pruning mechanism is used to stop the flow of unwanted traffic.
+
+Prunes are sent out the RPF interface when the router has no downstream members that need the multicast traffic, as is
+the case for R4, which has no interested receivers, and they are also sent out non-RPF interfaces to stop the flow of 
+multicast traffic that is arriving through the non-RPF interface, as is the case for R3, where multicast traffic is 
+arriving through a non-RPF interface from R2, which results in a prune message.
+
+In PIM-DM, prunes expire after 3 minutes. This causes the multicast traffic to be reflooded to all routers just as 
+was done during the initial flooding. This periodic (every 3 minutes) flood and prune behavior is normal and must
+be taken into account when a network is designed to use PIM-DM. 
+
+PIM-DM is applicable to small networks where there are active receivers on every subnet of the network. Because this is
+rarely the case, PIM-DM is not generally recommended for production environments; however, it can be useful for a lab
+environment because it is easy to set up.
+
+PIM Sparse Mode: (PIM-SM)
+PIM Sparse Mode(PIM-SM) was designed for networks with multicast application receivers scattered throughout the network
+- in other words, when the multicast group is sparsely populated across the network. However, PIM-SM also works well
+in densely populated networks. It also assumes that no receivers are interested in multicast traffic unless they 
+explicitly request it.
+
+Just like PIM-DM, PIM-SM uses the unicast routing table to perform RPF checks, and it does not care which routing
+protocol(including static routes) populates the unicast routing table;therefore, it is protocol independent.
+
+PIM Shared and Source Path Trees:
+PIM-SM uses an explicit join model where the receivers send an IGMP join to their locally connected router, which is 
+also known as the LHR, and this join the LHR to send a PIM join in the direction of the root of the tree, which is 
+either the RP in the case of a shared Tree(RPT) or the FHR where the source transmitting the multicast streams is 
+connected in the case of an SPT.
+
+A multicast forwarding state is created as the result of these explicit joins; it is very different from the flood
+and prune or implicit join behavior of PIM-DM, where the multicast packet arriving on the router dictates the
+forwarding state.
+
+A multicast source sending multicast traffic to the FHR. The FHR then sends this multicast traffic to the RP, which
+makes the multicast source known the RP. It also illustrates a receiver sending an IGMP join to the LHR to join the
+multicast group. The LHR then sends PIM join (*,G) to the RP, and this forms a shared tree from the RP to the LHR.
+
+The RP then sends a PIM join (S,G) to the FHR, forming a source tree between the source and the RP. 
+In essence, two trees are created: an SPT from the FHR to the RP(S,G) and a shared tree from the RP to the LHR(*,G).
+
+At this point, multicast starts flowing down from the source to the RP and from the RP to the LHR and then finally
+to the receiver. This is an oversimplified view of how PIM-SM achieves multicast forwarding. 
+
+As soon as the source for a group G sends a packet, the FHR that is attached to this source is responsible for 
+registering this source with the RP and requesting the RP to build a tree back to that router.
+
+The FHR encapsulates the multicast data from the source in a special PIM-SM message called the "register message"
+and unicast that data to the RP using a unidirectional PIM tunnel.
+
+when the RP receives the register message, it decapsulates the multicast data packet inside the register message, 
+and if there is no active shared tree because there are no interested receivers, the RP sends a register stop message
+directly to the registering FHR, without traversing the PIM tunnel, instructing it to stop sending the register 
+messages.
+
+If there is an active shared tree for the group, it forwards the multicast packet down the shared tree, and it sends
+an (S,G) join back to towards the source network S to create an (S,G) SPT.  
+
+If there are multiple hops(routers) between the RP and the source, this results in an (S,G) state being created in all
+the routers along the SPT, including the RP. There will also be a (*,G) in R1 and all of the routers between the FHR
+and the RP.
+
+As soon as the SPT is built from the source router to the RP, multicast traffic begins to flow natively from the source
+S to the RP.
+
+Once the RP begins receiving data natively(that is, down the SPT) from source S, it sends a register stop message to the
+source's FHR to inform it that it can stop sending the unicast register messages. At this point, multicast traffic from
+the source is flowing down the SPT to the RP and, from there, down the shared tree(RPT) to the receiver.
+
+Note: The PIM register tunnel from the FHR to the RP remains in an active up/up state even when there are no active
+multicast streams, and it remains active as long as there is a valid RPF path for the RP.
+
+PIM SPT Switchover:
+When the LHR receives the first multicast packet from the RP, it becomes aware of the IP address of the multicast
+source. At this point, the LHR checks its unicast routing table to see which is the shortest path to the source, 
+and it sends an (S,G) PIM join hop-by-hop to the FHR to form an SPT.
+
+Once it receives a multicast packet from the FHR through the SPT, if necessary, it switches the RPF interface to 
+be the one in the direction of the SPT ot the FHR, and it then sends a PIM prune message to the RP to shut off the
+duplicate multicast traffic coming from it through the shared tree.
+
+note: the PIM SPT switchover mechanism can be disabled for all groups or for specific groups.
+
+Designated Routers:
+
+
+
+
+
+
+
