@@ -19,10 +19,27 @@ or ssh://git@github.com/me/foo.git
 
 git branch       -- will show the local branch
 git branch -a    -- will show the local and remote branch
+git branch -r    -- will show the remote branch
+
 git remote -v    -- will show the remote repository
 
 git help switch 
 git help remote
+
+How to check out the remote branch in the remote repo. 
+
+1. setup your remote repo
+git remote add origin <link>    ; note: origin is the remote repo name
+
+2. fetch the remote branch info  
+git fetch origin <remote_branch_name> ; note after this you'll get the informaiton about the remote branch, but not pull yet
+
+3. pull the remote branch to local
+git checkout <remote_branch_name>
+
+4. To pull the remote branch to local but set a different name:
+git checkout -b 'YourBranch' origin/'YourRemote'
+
 
 git add local files in the current folder:   git add .
 push to the remote git repo:       
