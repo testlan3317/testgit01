@@ -322,10 +322,79 @@ duplicate multicast traffic coming from it through the shared tree.
 note: the PIM SPT switchover mechanism can be disabled for all groups or for specific groups.
 
 Designated Routers:
+when multiple PIM-SM routers exist on a LAN segment, PIM hello messages are used to elect a designated router (DR) to avoid sending duplicate multicast
+traffic into the LAN or the PR. 
 
+By default, the DR priority value of all PIM routers is 1, and it can be changed to force a particular router to become the DR during the DR election process,
+where a higher DR priority is preferred. 
+If a router in the subnet does not support the DR priority option or if all routers have the same DR priority, the highest IP address in the subnet is used as
+a tierbreaker. 
 
+On an FHR, the designated router is responsible for encapsulating in unicast register messages any multicast packets originated by a source that are destined to
+the RP. on an LHR, the designated router is responsible for sending PIM join and prune messages toward the RP to inform it about host group membership, and it
+is also responsible for performing a PIM STP switchover.
 
+Without Drs, all LHR on the same LAN segment would be capable of sending PIM joins upstream, which could result in duplicate multicast traffic arriving on the LAN.
+on the source side, if multiple FHRs exist on the LAN, they all send register messages to the RP at the same time.
 
+The default DR hold tiime is 3.5 times the hello interval, or 105 seconds. If there are no hellos after this interval, a new DR is elected. 
+To reduce DR failover time, the hello query interval can be reduced to speed up failover with a trade-off of more control plane traffic and CPU resource utilization
+of the router.
 
+Reverse Path Forwarding:
+Reverse Path Forwarding (RPF) is an algorithm used to prevent loops and ensure that multicast traffic is arriving on the correct interface. RPF functions as follow:
+1. If a router receives a multicast packet on an interface it uses to send unicast packets to the source, the packet has arrived on the RPF interface.
+
+2. If the packet arrives on the RPF interface, a router forwards the packet out the interfaces present in the outgoing interface list (OIL) of a multicast routing
+table entry.
+
+3. If the packet does not arrive on the RPF interface, the packet is discarded to prevent loop. 
+
+PIM uses multicat source trees between the source and the LHR and between the source and the RP. It also uses multicast shared tree between the RP and the LHRs. The
+RPF check is performed differently for each, as follows:
+
+1. If a PIM router has an (S,G) entry present in the multicast routing table (an SPT state), the router performs the RPF check against the IP address of the source
+for the multicast packet.
+
+2. If a PIM router has no explicit source-tree state, this is considered a shared-tree state. The router performs the RPF check onthe address of the RP, which is known
+when members join the group.
+
+PIM Forwarder:
+there are certain scenarios in which duplicate multicast packets could flow onto a multi-access network. The PIM assert mechanism stops these duplicate flows. 
+
+for example, R2 and R3 both receiving the same (S,G) traffic via their RPF interfaces and forwarding the packets on to the LAN segent. R2 and R3 therefore receive an 
+(S,G) packet via their downstream OIF that is in the OIF of their (S,G) entry. 
+
+R2 and R3 both send PIM assert messages into the LAN. These assert messages send their administrative distance (AD) and route metric back to the source to determine which
+router should forward the multicast traffic to that network segment.
+
+each router compares its own values with the received values. Preference is given to the PIM message with the lowest AD to the source. If a tie exists, the lowest route metric
+for the protocol wins; and as a final tiebreaker, the highest IP address is used.
+
+The losing router prunes its interface just as if it had received a prune on this interface, and the winning router is the PIM forwarder for the LAN.
+
+Note: The prune times out after 3 minutes on the losing router and causes it to begin forwarding on the interface again. The triggers the assert process to repeat. 
+If the winning router were to go offline, the loser would take over the job of forwarding on to this LAN segment after its prune timed out.
+
+The PIM forwarder concept applies to PIM-DM and PIM-SM. It is commonly used by PIM-DM but rarely used by PIM-SM because the only time duplicate packets can end up in a LAN is 
+if there is some sort of routing inconsistency.
+
+Rendezvous Points:
+In PIM-SM, it is mandatory to choose one or more routers to operate as rendezvous point (RPs). An RP is a single common root placed at a chosen point of a shared distribution 
+tree.
+
+An RP can be either configured statically in each router or learned through dynamic mechanism. 
+
+A PIM router can be configured to function as an RP either statically in each router in the multicast domain or dynamically by configuring Auto-RP or PIM bootstrap router (BSR)
+
+Note: BSR and Auto-RP were not designed to work together and may introduce unnecessary complexities when deployed in the same network. The recommendation is not to use them
+concurrently.
+
+Static RP:
+If the network does not have many different RPs defined or if the RPs do not change very often, this could be the simplest method for defining RPs. It can also be an attractive 
+option if the network is small.
+
+Auto-RP: (cisco-proprietary)
+The Auto-RP mechanism operates using two basic components: candidate RPs (C-RPs) and RP mapping agents (MAs)
 
 
