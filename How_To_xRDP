@@ -1,0 +1,116 @@
+1. How to install xRDP on Ubuntu 20.04?
+xRDP is an open-source implementation of the Microsoft Remote Desktop Protocol (RDP) that allow you to graphically control a remote
+system. 
+Ubuntu servers are managed from the command line and do not have a desktop environment installed by default. if you run the desktop
+version of Ubuntu, skip this step.
+
+There are various desktop environments available in Ubuntu repositories that you can choose. 
+One option is to install Gnome, which is the default desktop environment in Ubuntu 20.04. 
+Another is to install Xfce. It is a fast,stable, and lightweight desktop environment, which makes it ideal for usage on a remote
+server.
+
+- install Gnome
+  $ sudo apt update
+  $ sudo apt install ubuntu-desktop
+
+- install Xfce
+  $ sudo apt update
+  $ sudo apt install xubuntu-desktop
+
+Installing Xrdp: Xrdp is included in the default Ubuntu repositories. To install it
+- install xRDP
+  $ sudo apt install xrdp
+
+Once the installation is complete, the Xrdp service will automatically start. You can verify it by typing:
+  $ sudo systemctl status xrdp
+
+By default Xrdp uses the /etc/ssl/private/ssl-cert-snakeoil.key file gthat is readable only by members of the "ssl-cert" group. 
+Run the following command to add the xrdp users to the group:
+  $ sudo adduser xrdp ssl-cert
+
+Restart the Xrdp service for changes to take effect:
+  $ sudo systemctl restart xrdp
+
+That's it. 
+
+Important Xrdp configuraiton:
+The xrdp configuraiton files are located in the /etc/xrdp folder. For basic xrdp connections, you do not need to make any changes
+to the configuraiton files. 
+
+xrdp.ini: The main configuration file. This file is divided into sections and allows you to set global configuration settings
+such as security and listening addresses and create different xrdp login sessions. 
+Note: whenever you make any changes to the configuration file, you need to restart the xrdp service. 
+
+startwm.sh: xrdp uses startwm.sh file to launch the X session. If you want to use another X window desktop, edit this file. 
+
+Configuring Firewall:
+The xrdp daemon listens on port 3389 on all interfaces. If you run a firewall on your Ubuntu server. you'll need to open the xrdp
+ports.
+
+To allow access to the Xrdp server from a specific IP address or IP range, for example, 192.168.33.0/24, you would run:
+  $ sudo ufw allow from 192.168.33.0/24 to any port 3389
+
+if you want to allow access from anywhere (which is highly discouraged for security reasons), run:
+  $ sudo ufw allow 3389
+
+For increased security, you may consider setting up Xrdp to listen only on localhost and creating an SSH tunnel that securely
+forwards traffic from your local machine on port 33890 to the server on the same port. 
+
+Normally issues after install the xRDP, you will see the pop up window to ask your authentication as below:
+
+1. Authentication Required: Authentication is required to create a color managed device. 
+2. Then another popup will show up again displaying Authentication required message. (it depends based on the situations)
+
+The behavior explained:
+Ubuntu is using the PolKit software component. 
+Polkit is basically an application authorization framework that will capture actions performed by a user and check if this user
+is authorized to perform such action on the system.
+
+Polkit reads some policy files that will specify if the user requested by the user is authorized, not authorized or
+need authentication. Polkit provides a way to implement granular authorization to users based on the action requested.
+
+when you perform login on Ubuntu and the popup appears, it simply means that the Polkit Policy file for this action cannot be
+performed without authentication first. Now, if you logon locally on the system, no popup are displayed because Polkit 
+application has evaluated that this action does not need authentication. This means that Polkit can differentiate between a local
+session and a remote session. This also means that different authorization policies applies for local sessions and remote sessions.
+
+Solution:
+
+Create color manager policy
+
+Create a file: /etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla
+
+Paste the following content:
+
+[Allow Colord all Users]
+Identity=unix-user:*
+Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
+
+Create package manager policy
+
+create a file /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+
+Paste the following content:
+
+[Allow Package Management all Users]
+Identity=unix-user:*
+Action=org.freedesktop.packagekit.system-sources-refresh
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes
+
+Create Network manager Wifi Scan policy (this may or may not needed)
+
+create a file: /etc/polkit-1/localauthority/50-local.d/47-allow-wifi-scan.pkla
+
+Paste the following content:
+
+[Allow WiFi Scan all Users]
+Identity=unix-user:*
+Action=org.freedesktop.NetworkManager.wifi.scan
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
