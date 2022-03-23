@@ -114,3 +114,18 @@ Action=org.freedesktop.NetworkManager.wifi.scan
 ResultAny=no
 ResultInactive=no
 ResultActive=yes
+
+Another issue would be, while you have logged on the local computer, but when you try to remote, you only see the black screen.
+
+This is actually how the xrdp was designed. The xrdp only allow one account either log on locally or remotely.
+
+so, to resolve this, you have to logout the local session. you could either log out from local computer or logout through ssh.
+
+How to log out a gnome sessin which logged on locally?
+
+$env DISPLAY=0.0 gnome-session-quit --logout
+
+This will pop up a logout screen on the local computer. To force logout
+$env DISPLAY=0.0 gnome-session-quit --force
+
+
