@@ -180,3 +180,5 @@ settings. This udev rule must be disabled in order for the NVIDIA CUDA driver to
     You will need to reboot the system to initialize the above changes. 
 
 
+To confirm whether cuda is working, run:
+    $ nvcc --version
