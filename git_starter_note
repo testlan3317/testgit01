@@ -242,3 +242,81 @@ Difference between "git add -A" and "git add ."
 - git add . : stages new files and modifications, without deletions (on the current directory and its subdirectories).
 - git add -u : stages modifications and deletions, without new files. 
 - git add -A is equivalent to git add . ; git add -u ( two commands combine together)
+
+
+
+------------------------------------------------------------
+Git: Merge Branch into Master
+$ git branch:    The git branch command is used to list all existing branches in a repository. An asterisk will appear next to the currentlyu active branch.
+* master
+
+To create a new branch, we can use the "git branch new-branch" command. This will create a new branch mirroring the commits on the currently active branch:
+$ git branch new-branch
+$ git branch
+* master
+new-branch
+
+At this point we have created a new branch, but are still located on the source branch. To start working on the new branch we first need to run the command 
+"git checkout new-branch". This will change the active branch to the new branch:
+
+$ git checkout new-branch
+Switched to branch 'new-branch'
+
+$ git branch
+master
+* new-branch
+
+At this point, commits can be made on the new branch to implement the new feature. Once the feature is complete, the branch can be merged back into the main code branch.
+
+First we run "git checkout master" to change the active branch back to the "master" branch. Then we run the command "git merge new-branch" to merge the new feature into 
+the master branch.
+
+If you are merging a new feature inot the main branch, you first want to switch to the main branch and then merge into it:
+$ git add -A
+$ git commit -m "Some commit message"
+$ git checkout master
+Switched to branch 'master'
+$ git merge new-branch
+
+If all goes well then our job is done. The new feature commits now appear in the main branch. However, it is possible that Git won't be able to complete the merge due to 
+a conflict change in the source branch. This is called a merge conflict.
+------------------------------------------------------------
+Differences Between Git Merge and Rebase 
+
+A normal scenario for merge:
+1. A: work on a new feature at "feature-2" branch
+2. B: work on the master and had couple of commits ahead of A, and update them to the master at remote repository. 
+
+we want to merge the changes to feature-2, so we could get the latest files and keep working on our own development
+
+on A's machine switch from "feature-2" to "master"
+$ git switch master
+$ git pull
+$ git switch feature-2
+$ git merge master
+
+This merge actually would create another commit at the backend. 
+
+A normal scenario for Rebase:
+1. A: work on feature_branch for a new feature, had 2 commits
+2. B: work on the master, and had #1, #2, #3, #4 commites after master, and it is ahead of A, and update them to the master at remote repository.
+
+In order for us to get the latest files and keep working on our own development, we could also use rebase
+
+rebase is an action in Git that allows you to rewrite commits from one Git branch to another branch. 
+
+After performing the rebase, the feature branch becomes 2 commits ahead and 0 commits behind the master, and hence we can perform the fast-forward merge.
+
+$ git switch master
+$ git pull
+$ git switch feature-2
+$ git rebase master feature-2
+
+git pull: The git pull command is used to fetch and download content from a remote repository and immediately update the local repository to match that content. 
+
+git fetch: really only downloads new data from a remote repository - but it doesn't integrate any of this new data into your working files. Fetch is great for 
+getting a fresh view on all the things that happened in a remote respository. 
+Due to it's "harmless" nature, you can rest assured: fetch will never manipulate, destory, or screw up anything. 
+
+
+
