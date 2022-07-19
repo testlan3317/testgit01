@@ -318,5 +318,13 @@ git fetch: really only downloads new data from a remote repository - but it does
 getting a fresh view on all the things that happened in a remote respository. 
 Due to it's "harmless" nature, you can rest assured: fetch will never manipulate, destory, or screw up anything. 
 
+HEAD is reference to the currently checked-out branch or commit:
+1. HEAD is locally significant
+2. Pointer is located in the .git/HEAD file
+3. Default pointer is ref: refs/heads/master
+4. Change reference to specific branch git checkout <branch>
+5. Change reference to specific commit git checkout <sha1>
+
+Fork: A fork is a copy of repository. This is useful when you want to continue to someone else's project or start your own project based on theirs.
 
 
