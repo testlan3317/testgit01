@@ -278,6 +278,9 @@ $ git checkout master
 Switched to branch 'master'
 $ git merge new-branch
 
+till now, it's merged. so we could delete the "new-branch" branch.
+$ git branch -d new-branch
+
 If all goes well then our job is done. The new feature commits now appear in the main branch. However, it is possible that Git won't be able to complete the merge due to 
 a conflict change in the source branch. This is called a merge conflict.
 ------------------------------------------------------------
