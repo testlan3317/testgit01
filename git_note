@@ -23,10 +23,16 @@ git branch -r    -- will show the remote branch
 
 git remote -v    -- will show the remote repository
 
-git help switch 
+git help switch
+
+switch a branch:
+git switch <branch_name>
+git switch -c <branch_name> : -c means create, this will create a new branch name
+
 git help remote
 
-How to check out the remote branch in the remote repo. 
+
+***How to check out the remote branch in the remote repo.*** 
 
 1. setup your remote repo
 git remote add origin <link>    ; note: origin is the remote repo name
@@ -35,7 +41,7 @@ git remote add origin <link>    ; note: origin is the remote repo name
 git fetch origin <remote_branch_name> ; note after this you'll get the informaiton about the remote branch, but not pull yet
 
 3. pull the remote branch to local
-git checkout <remote_branch_name>
+git checkout  --track  <remote_branch_name>
 
 4. To pull the remote branch to local but set a different name:
 git checkout -b 'YourBranch' origin/'YourRemote'
