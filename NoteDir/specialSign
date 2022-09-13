@@ -30,6 +30,7 @@ Example:
 ps -p $$
 
 $!: is the PID of the last program your shell ran in the background (e.g. myprog &)
+!!: last command you execute
 
 
 Heredoc sounds more convenient for this purpose and also good for writing multiple lines comments:
