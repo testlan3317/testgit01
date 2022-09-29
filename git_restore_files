@@ -1,0 +1,102 @@
+How to see code changes after git pull?
+
+# will show you the names of the files that changed for the last two commits
+git log --name-status -2
+
+# will show you the changes themselves.
+git log -p -2
+
+# Before you pull, will show you what commits you are about to retrieve, along with the names of the files.
+git fetch
+git log --name-status origin/master..
+
+# Before pulling
+# You can review changes with fetch and diff before merging:
+git fetch
+git diff master...origin/master
+
+# Note the triple period, which means diff against the shared parent and orign/master 
+# Just after a pull, you'll see something like below:
+Updating dc2ab9c..87acfaf
+
+# you can then simply do:
+git diff dc2ab9c..87acfaf
+
+# or whatever other command:
+git log --name-status dc2ab9c..87acfaf
+
+## git log
+use "git log" to view the commit history. Each commit has an associated revision specifier that is a hash key (e.g. 14b8d0982044b0c49f7a855e396206ee65c0e787 and b410ad4619d296f9d37f0db3d0ff5b9066838b39).
+
+To view the difference between two different commits, use "git diff" with the first few characters of the revision specifiers of both commits, like so:
+# diff between commits 14b8... and b410...
+git diff 14b8..b410
+# only include diff of specified files
+git diff 14b8..b410 path/to/file/a path/to/file/b
+
+If you want to get an overview over all the differences that happened from commit to commit, use git log or git whatchanged with the patch option:
+
+# include patch displays in the commit history
+git log -p
+git whatchanged -p
+# only get history of those commits that touch specified paths
+git log path/a path/b
+git whatchanged path/c path/d
+
+File restore: (quote from: https://careerkarma.com/blog/git-restore-deleted-file/)
+
+Git: Restore Deleted File
+We’re working on a repository called ck-git. Our repository once stored a file called config.py which we now want to retrieve. This file contained some standard configuration settings for our project.
+
+We can use the ls command to verify that the file does not exist:
+#ls 
+This command returns:
+README.md    dev   	 docs   	 app.py
+
+We know that we must have deleted the file in the last commit because it was in the repository before we made our most recent changes.
+Because we know what commit our file was in, we can use the git checkout command to retrieve the file:
+
+#git checkout HEAD~1 config.py
+
+HEAD refers to the current version of the repository we are viewing. In this case, we are viewing the master branch. This is because we have not navigated to any other branch. The ~1 tells Git to move back one commit from our current HEAD.
+
+config.py refers to the name of the file we want to retrieve.
+When you specify a file or folder with the git checkout command, Git will only retrieve that file and make it part of your local working copy of a repository.
+
+If you don’t specify a file to retrieve, Git will move your repository into “detached HEAD” state . In this state, you can navigate around a repository at the point in history you specified.
+
+Let’s take a look at the files in our project using the ls command:
+README.md    dev   	 docs   	 app.py   config.py
+
+The git checkout command has successfully retrieved the config.py file. We can now commit this file to our repository so we do not lose it:
+
+#git add config.py
+#git commit -m "feat: Reintroduce config.py file"
+#git push
+
+First, we add config.py to the staging area. This is because it is a new file in our repository. We then add the file to a commit and push that commit to the remote version of our repository.
+
+Find the Last Commit on a File
+You can use the git rev-list (revision list) command to find the checksum of the last commit that affected a file. Using this information and the git checkout command, you can retrieve a file from a commit without knowing when the file was last modified.
+
+We want to recover a file called routes.py from our repository. We know that it existed at some point in the history of our project, but we are not sure when we last modified the file.
+To find the commit in which we last modified the routes.py file, use the git rev-list command:
+
+#git rev-list HEAD -- routes.py -n 1
+
+We’ve used the rev-list command with a couple of options. This command tells Git to list all the commits which are reachable from our HEAD that changed the “routes.py” file. The -n 1 option instructs Git to limit the result of the command to one entry.
+Let’s see what happens when we run this command:
+
+9ad202d538c6ee6448e2c1ecc080c292cc761771
+
+We can see the checksum for the last commit in which our routes.py file was modified. We can use this information with the checkout command to retrieve our deleted file:
+
+#git checkout 9ad202d538c6ee6448e2c1ecc080c292cc761771^ routes.py
+
+This command retrieves routes.py from the commit before it was deleted. We have added the ^ to the end of the command to retrieve the commit before the one we specify. This is because the last commit that modifies a file is the one in which the file has been deleted.
+When we run this command, there are no error messages returned. This means our file has been successfully retrieved. Let’s run the ls command to verify our file has been added to our repository:
+
+README.md    dev   	 docs   	 app.py   config.py   	 routes.py
+Our routes.py file is in our local working directory.
+
+-----------------------------------
