@@ -1,0 +1,4 @@
+- name: fail module
+  fail:
+    msg: <msg>
+  when: <condition>

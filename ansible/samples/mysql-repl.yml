@@ -1,0 +1,16 @@
+- name: change master -repl
+  mysql_replication:
+    mode: <mode>
+    primary_user: <user>
+    primary_password: <pwd>
+    primary_host: <primary_host>
+    primary_log_file: <file>
+    primary_log_pos: <position>
+
+- name: slave status
+  mysql_query:
+    query: show slave status
+
+- name: start slave
+  mysql_query:
+    query: START SLAVE 

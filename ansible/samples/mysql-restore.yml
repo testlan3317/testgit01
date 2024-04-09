@@ -1,0 +1,5 @@
+- name: db restore
+  mysql_db:
+    name: <name>
+    state: import
+    target: "<dump_file>"

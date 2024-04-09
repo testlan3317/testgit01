@@ -1,0 +1,6 @@
+- name: fail old files
+  find:
+    paths: <path>
+    age: <age_pattern>
+    pattern: "<pattern>"
+  register: oldfiles

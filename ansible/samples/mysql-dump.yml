@@ -1,0 +1,13 @@
+- name: perform dump
+  mysql_db:
+    name: "<name>"
+    state: dump
+    single_transaction: true
+    skip_lock_tables: true
+    master_data: 2
+    target: "<generate-sql-dump>"
+    login_user: "dbuser"
+    login_password: "dbBackupPWD"
+    login_unix_socket: "/var/lib/mysql/mysql.sock"
+  async: <time>
+  poll: <time>

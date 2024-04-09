@@ -1,0 +1,6 @@
+- name: restore iptables
+  community.general.iptables_state:
+    state: restored
+    path: "<file_path>"
+  async: <time>
+  poll: <time>

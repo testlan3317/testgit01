@@ -1,0 +1,9 @@
+- name: enable iptables
+  ansible.builtin.iptables:
+    chain: <chain_name>
+    protocol: <tcp|udp>
+    ctstate: NEW
+    destination_port: <port>
+    jump: <ACCEPT|DROP|DENY>
+    state: present
+  with_items: <item>
