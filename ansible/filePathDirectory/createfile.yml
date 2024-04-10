@@ -1,0 +1,10 @@
+---
+- name: create file
+  hosts: redhatclient
+  tasks:
+    - name: create the file
+      file:
+        path: /home/zhengj/test.txt 
+        state: touch 
+        mode: "0755"
+  

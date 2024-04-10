@@ -1,0 +1,2 @@
+[redhatclient]
+client1 ansible_host=1.2.3.4 hostname=client1 changed=true

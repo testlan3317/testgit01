@@ -1,0 +1,25 @@
+---
+- name: stop all the running docker container and remove them
+  hosts: redhatclient
+  tasks:
+    - name: stop the running containers
+      shell: docker container stop $(docker container ls -q)
+      ignore_errors: yes
+
+    - name: remove all the containers
+      shell: docker container rm $(docker container ls -a -q)
+      ignore_errors: yes
+
+    - name: stop the docker service
+      service:
+        name: docker
+        state: stopped
+
+    - name: flush iptables
+      shell: iptables -F
+      ignore_errors: yes
+
+    - name: start the docker service
+      service:
+        name: docker
+        state: started

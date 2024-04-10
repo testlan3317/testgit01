@@ -1,0 +1,25 @@
+---
+- name: append list test
+  hosts: localhost
+  tasks:
+  - name: define list
+    set_fact:
+      Countries: ['India', 'Japan', 'Norway', 'Netherlands', 'Switzerland', 'Germany', 'United States of America']
+
+  - name: print countries before add other countries
+    debug: var=Countries
+  
+  - name: add new countries
+    set_fact:
+      Countries: "{{ Countries + ['United Kingdom', 'Russia'] }}"
+
+  - name: print countries after add other countries
+    debug: var=Countries
+
+  - name: print the last item
+    debug:
+      msg: 'The last item is {{Countries|last}}'
+
+  - name: print the last item using the length and Index number
+    debug:
+      msg: 'The last item is {{ Countries[Countries|length -1] }}'

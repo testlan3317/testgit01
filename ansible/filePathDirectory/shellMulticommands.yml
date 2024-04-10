@@ -1,0 +1,13 @@
+---
+- name: test shell multicommands
+  hosts: localhost
+  tasks:
+    - name: test shell module multiple commands
+      shell: |
+        pwd
+        echo "Hello 1"
+        echo "Hello 2"
+        mkdir /home/zhengj/ansible/test1
+        mkdir /home/zhengj/ansible/test2
+      args:
+        chdir: /home/zhengj/ansible/

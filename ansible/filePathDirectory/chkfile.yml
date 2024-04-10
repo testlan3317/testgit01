@@ -1,0 +1,22 @@
+---
+- name: check file and directory 
+  hosts: redhatclient 
+  tasks:
+    - name: check if file exists 
+      stat: 
+        path: "/home/zhengj/test.txt"
+      register: file_status
+
+    - name: Report if file exist
+      debug:
+        msg: "The file exist"
+      when: file_status.stat.exists
+
+    - name: Report if file not exist 
+      debug:
+        msg: "The file not exist, will create the file"
+      when: not file_status.stat.exists
+
+    - name: create file
+      include_tasks: "createfileIn.yml"
+      when: not file_status.stat.exists

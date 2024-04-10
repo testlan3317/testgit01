@@ -1,0 +1,22 @@
+---
+- name: append numbers and find the max and mini 
+  hosts: localhost
+  tasks:
+  - name: define the number
+    set_fact:
+      numbers: []
+
+  - name: Add new numbers to the list
+    set_fact:
+      numbers: '{{ numbers + [1,2,3,4,5] }}'
+
+  - name: Print numbers after appending
+    debug: var=numbers
+
+  - name: find the maximum value
+    debug:
+      msg: 'The biggest number is {{ numbers|max }}'
+
+  - name: find the minimum value
+    debug:
+      msg: 'The smallest number is {{ numbers|min }}'

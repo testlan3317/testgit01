@@ -1,0 +1,28 @@
+---
+- name: collect the hardware information for the remote device 
+  hosts: redhatclient
+  gather_facts: true
+  tasks:
+#  - name: print out the full info
+#    ansible.builtin.debug:
+#      var: hostvars[inventory_hostname]
+  - name: get basic info
+    ansible.builtin.debug:
+      msg:
+        - "hostname: {{ ansible_hostname }}"
+        - "ip: {{ ansible_default_ipv4.address }}"
+        - "default gateway: {{ ansible_default_ipv4.gateway }}"
+        - "interface: {{ ansible_default_ipv4.interface }}"
+        - "type: {{ ansible_default_ipv4.type }}"
+        - "architecture: {{ ansible_architecture }}"
+        - "distribution: {{ ansible_distribution }}"
+        - "release: {{ ansible_distribution_release }}"
+        - "major: {{ ansible_distribution_major_version }}"
+        - "version: {{ ansible_distribution_version }}"
+        - "allinterface: {{ansible_interfaces}}"
+        - "kernel: {{ansible_kernel}}"
+        - "LVM: {{ansible_lvm}}"
+        - "vcpu: {{ansible_processor_vcpus}}"
+        - "memory: {{ansible_memtotal_mb}}"
+        - "python version: {{ansible_python_version}}"
+        - "swap: {{ ansible_swaptotal_mb }}"

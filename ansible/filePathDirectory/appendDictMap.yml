@@ -1,0 +1,18 @@
+---
+- name: add dict (map) to the list
+  hosts: localhost
+  tasks:
+    - name: define a blnak list
+      set_fact:
+        UserRecords: []
+
+    - name: Print the user records 
+      debug: var=UserRecords 
+
+    - name: add new user records 
+      set_fact:
+        UserRecords: '{{ UserRecords + [{"name":"James", "Mobile":"123456"}, {"name":"Bill", "Mobile":"456789"} ]}}'
+
+    - name: print the user records again
+      debug:
+        var=UserRecords

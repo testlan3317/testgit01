@@ -1,0 +1,9 @@
+---
+- name: test lookup vars 
+  hosts: redhatclient
+  tasks:
+  - name: show value of 'variablename'
+    debug: msg="{{ lookup('vars', 'variable'+myvar) }}"
+    vars:
+      variablename: hello
+      myvar: ename

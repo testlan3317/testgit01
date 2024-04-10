@@ -1,0 +1,92 @@
+---
+- name: check docker based on facts
+  hosts: redhatclient
+  gather_facts: true
+  tasks:
+  - name: check if it is redhat 8
+    debug: 
+      msg: "it's redhat 8"
+    when: ansible_facts["distribution"]=="RedHat" and ansible_facts["distribution_version"]=="8.6"
+
+  - name: check if the service is running
+    shell: systemctl status docker.service
+    register: docker_status
+    ignore_errors: true
+    tags:
+      - testing
+
+  - name: print docker status
+    debug:
+      msg: "docker status: {{ docker_status.rc }} and {{ docker_status.stderr }}"
+    tags:
+      - testing
+
+  # This command is supposed to be running at the root user
+  - name: if there is previous docker engine installed, then remove it 
+    yum:
+      name:
+        - docker
+        - docker-client
+        - docker-client-latest
+        - docker-common
+        - docker-latest 
+        - docker-latest-logrotate 
+        - docker-logrotate 
+        - docker-engine
+      state: absent 
+    become: true
+    when: docker_status.rc==0
+    tags:
+      - install
+  
+  - name: if there is no docker engine installed, then install it. 
+    yum:
+      name:
+        - yum-utils 
+      state: present 
+    become: true
+    when: docker_status.rc!=0
+    tags:
+      - install
+
+  - name: add signing key for docker 
+    rpm_key:
+      key: https://download.docker.com/linux/centos/gpg
+      state: present
+    tags:
+      - install
+
+  - name: add the docker repo
+    yum_repository:
+      name: docker
+      description: For docker ce install
+      baseurl: https://download.docker.com/linux/centos/8.6/x86_64/stable/
+      enabled: true
+      gpgcheck: true
+      gpgkey: https://download.docker.com/linux/centos/gpg
+    become: true
+    when: docker_status.rc!=0
+    tags:
+      - install
+
+  - name: install Docker Engine 
+    yum:
+      name:
+        - docker-ce 
+        - docker-ce-cli 
+        - containerd.io
+        - docker-buildx-plugin 
+        - docker-compose-plugin 
+      state: present 
+    become: true
+    when: docker_status.rc!=0
+    tags:
+      - install
+
+  - name: start docker Engine
+    service:
+      name: docker
+      state: started
+    become: true
+    tags:
+      - install

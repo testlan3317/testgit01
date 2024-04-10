@@ -1,0 +1,29 @@
+---
+- name: make docker compose to combine both nginx and datacenter
+  hosts: redhatclient
+  tasks:
+    - name: check if the folder exist
+      stat:
+        path: /home/zhengj/composedocker
+      register: fld_status 
+    
+    - name: if folder not exist, create the folder
+      file: 
+        path: /home/zhengj/composedocker 
+        recurse: yes
+        state: directory
+        owner: zhengj 
+        group: zhengj 
+      when: not fld_status.stat.exists
+
+    - name: check if the file exists 
+      stat:
+        path: /home/zhengj/composedocker/docker-compose.yml
+      register: file_status 
+
+    - name: copy docker-compose.yml file to created path
+      copy:
+        src: "../composedocker/docker-compose.yml"
+        dest: "/home/zhengj/composedocker"
+      when: not file_status.stat.exists
+      

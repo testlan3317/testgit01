@@ -1,0 +1,22 @@
+---
+- name: create non-exists directory
+  hosts: redhatclient
+  tasks:
+    - name: check directory exist
+      stat:
+        path: /home/zhengj/<service>
+      register: dir_status
+
+    - name: if dir exist 
+      debug:
+        msg: "dir is exist"
+      when: dir_status.stat.exists
+
+    - name: if dir not exist
+      debug:
+        msg: "dir is not exist, will create the directory"
+      when: not dir_status.stat.exists
+
+    - name: create the folder
+      include_tasks: "createdirIn.yml"
+      when: not dir_status.stat.exists

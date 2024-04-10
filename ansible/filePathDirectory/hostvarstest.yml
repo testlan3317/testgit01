@@ -1,0 +1,53 @@
+---
+- name: test hostvars
+  hosts: redhatclient
+  gather_facts: yes
+  tasks:
+  - name: define a list
+    set_fact:
+      testlist = []
+  
+#  - name: try out the hostvars 
+#    debug:
+#      var=hostvars
+
+  - name: print the separator
+    debug:
+      msg: "==============================="
+
+  - name: print ansible facts
+    debug:
+      var=hostvars[inventory_hostname]
+
+  - name: print the separator
+    debug:
+      msg: "================================"
+
+  - name: print the inventory hostname
+    debug:
+      msg: "{{ inventory_hostname }}"
+
+  - name: print the hostname defined in the hosts file
+    debug:
+      var=hostvars[inventory_hostname]['hostname']
+    register: hostvalue
+
+  - name: print the hostname another way
+    debug:
+      var: inventory_hostname
+  
+  - name: print the test output
+    debug:
+      msg: "{{hostvalue}}"
+
+  - name: grab message details
+    set_fact:
+      storevalue: "{{ hostvalue[\"hostvars[inventory_hostname]['hostname']\"] }}"
+
+  - name: print storevalue 
+    debug:
+      msg: "{{storevalue}}"
+
+  - name: print changed property
+    debug: 
+      msg: "{{changed}}"

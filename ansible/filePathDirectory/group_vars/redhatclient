@@ -1,0 +1,14 @@
+servicefolders:
+  - name: services 
+    path: /home/zhengj/service
+  - name: goserver
+    path: /home/zhengj/goserver
+  - name: gwserver
+    path: /home/zhengj/gwserver
+
+servicefiles:
+  - /home/zhengj/service/test1.txt
+  - /home/zhengj/service/test2.txt
+  - /home/zhengj/goserver/test3.txt 
+
+edrVer: 5.4.1.309

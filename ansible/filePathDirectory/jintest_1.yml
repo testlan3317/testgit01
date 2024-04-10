@@ -1,0 +1,15 @@
+---
+- name: job exec successfully
+  hosts: redhatclient
+  tasks:
+    - name: testing variable
+      #debug:
+      #  msg: "job exec {{item.name}} successfully"
+      template:
+        src: ./template/service_1.j2
+        dest: ./{{item.name}}_service1.txt
+        owner: zhengj
+        group: zhengj
+        mode: "0755"
+      when: item.name == "service"
+      loop: "{{servicefolders}}"

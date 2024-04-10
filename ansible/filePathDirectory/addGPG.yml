@@ -1,0 +1,9 @@
+---
+- name: add gpg example
+  hosts: redhatclient
+  tasks:
+  - name: add gpg key for docker
+    rpm_key:
+      key: https://download.docker.com/linux/centos/gpg
+      state: present
+    become: true

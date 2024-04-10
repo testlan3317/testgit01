@@ -1,0 +1,61 @@
+---
+- name: check the hardware information on the hosts
+  hosts: redhatclient
+  gather_facts: yes
+  tasks:
+    - name: testing testing 
+      debug:
+        msg: "testing"
+
+#    - name: print ansible facts
+#      debug:
+#        var: ansible_facts
+
+    - name: get host info and ip
+      debug:
+        msg: "host name is {{ ansible_facts['hostname'] }}, ip is {{ ansible_facts['ens192']['ipv4']['address'] }}" 
+      when: ansible_facts["distribution"] == "RedHat" and ansible_facts["distribution_version"] == "8.6"
+
+    - name: get ram and swap information
+      debug:
+        msg: "total memory is {{ (ansible_facts['memtotal_mb']/1000) | round(1,'floor') }} GB, the total size of swap is {{ (ansible_facts['memory_mb']['swap']['total']/1000)|round(1,'floor') }}GB"
+      when: ansbile_facts["distribution"] == "RedHat" and ansible_facts["distribution_version"] == "8.6"
+
+    - name: get cpu core and vcpus
+      debug:  
+        msg: "total core is {{ ansible_facts['processor_cores']}}, total vcpu is {{ ansible_facts['processor_vcpus'] }}"
+      when: ansible_facts["distribution"] == "RedHat" and ansbile_facts["distribution_version""] == "8.6"
+
+    - name: create a local file with content 
+      copy: 
+        dest: /home/zhengj/ansible/hwinfo.txt
+        content: |
+          hostname={{ ansible_facts['hostname'] }}, ip={{ ansible_facts['ens192']['ipv4']['address'] }}
+      delegate_to: localhost
+
+#    - name: set the values ofr testing 
+#      set_fact:
+#        records1: test1, 127.0.0.1
+#        records2: test2, 127.0.0.2
+#        records3: test3, 127.0.0.3
+
+    - name: check file exist
+      stat:
+        path: /home/zhengj/ansible/hwinfo.txt
+      register: file_exist
+      delegate_to: localhost
+
+    - name: print if file exist 
+      debug: 
+        msg: "file exists is {{ file_exist.stat.exists }}"
+    
+    - name: loop the testing file to the already created file
+      lineinfile:
+        path: /home/zhengj/ansible/hwinfo.txt
+        insertafter: "hostname=*,ip=*"
+        line: "hostname={{ item.host }}, ip={{ item.ip }}"
+      with_items:
+        - { host: test1, ip: 127.0.0.1 }
+        - { host: test2, ip: 127.0.0.2 }
+        - { host: test3, ip: 127.0.0.3 }
+      delegate_to: localhost
