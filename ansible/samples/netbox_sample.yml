@@ -1,0 +1,50 @@
+---
+- name: create vm device
+  netbox.netbox.netbox_virtual_machine:
+    netbox_url: "<url>"
+    netbox_token: "<netbox_token>"
+    data:
+      name: "<hostname>"
+      virtual_machine_role: "<netbox_role>"
+      custom_fields:
+        AdminGroup: "<adminGroup>"  # these custom_fileds must exist in the netbox instance
+        Classification: "<classification>"
+        Criticality: "<criticality>"
+      cluster: "<cluster>"
+    state: "<absent|present>"
+    validate_certs: "<if_verify_certs>"
+
+- name: create main interface
+  netbox.netbox.netbox_vm_interface:
+    netbox_url: "<url>"
+    netbox_token: "<token>"
+    data: 
+      virtual_machine: "<hostname>"
+      name: "<interface_name>"
+    state: "<absent|present>"
+    validate_certs: "<if_verify_certs>"
+
+- name: create IP and attach it to the main interface
+  netbox.netbox.netbox_ip_address:
+    netbox_url: "<url>"
+    netbox_token: "<token>"
+    data:
+      address: "<IP addr>"
+      vrf: "<vrf>"
+      assigned_object:
+        virtual_machine: "<hostname>"
+        name: "<interface_name>"
+      custom_fields:
+        AdminGroup: "<adminGroup>"
+    state: "<absent|present>"
+    validate_certs: "<if_verify_certs>"
+
+- name: assign IP as primary at virtual machine
+  netbox.netbox.netbox_virtual_machine:
+    netbox_url: "<url>"
+    netbox_token: "<token>"
+    data:
+      name: "<hostname>"
+      primary_ipv4: "<IP>"
+    state: "<absent|present>"
+    validate_certs: "<if_verify_certs>"

@@ -1,0 +1,23 @@
+---
+- name: jinja2 test
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+  - include_vars:
+      file: stuff.yml
+      name: stuff
+  
+  tasks:
+  - name: print staff
+    debug:
+      msg: "{{ item.name }}"
+    loop: "{{ employee }}"
+
+  - name: get specific user
+    debug:
+      msg: "{{ employee | selectattr('name', 'eq', 'Lee') }}"
+  
+  - name: print staff -var
+    debug:
+      var: "{{ item }}"
+    loop: "{{ employee }}"

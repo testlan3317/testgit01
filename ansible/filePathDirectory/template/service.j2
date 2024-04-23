@@ -5,3 +5,114 @@
 {%for item in service_fodler %}
 {{item}}
 {%endfor%}
+
+{{ "foo bar bar qux" | truncate(9) }}
+{{ "foo bar bar qux" | truncate(9, False) }}
+{{ "foo bar bar qux" | truncate(9, True) }}
+{{ "foo bar bar qux" | truncate(9, True, 'i' }}
+
+{# return list of list #}
+{# slice to 3 lists (equal length). and fill with None by default #}
+{{ "foo bar qux apple" | slice(3) }}
+
+{# slice to 3 lists (equal length), and fill with 'i' #}
+{{ "foo bar qux apple" | slice(3, 'i') }}
+
+{# sort testfunction #}
+{% for user in employee | sort(attribute="age") %}
+    {{ user }}
+{% endfor %}
+
+{# sort reverse #}
+{% for user in employee | sort(attribute="age", reverse=True) %}
+    {{ user }}
+{% endfor %}
+
+{# if elif else embedded #}
+{% for user in employee | sort(attribute="age", reverse=True) %}
+    {%- if user.age=30 %}
+        {{ user }}
+    {% else %}
+        the user age is not 30
+    {% endif %}
+{% endfor %}
+
+{# sum all the employee ages from the list of employee dict #}
+{{ employee | sum(attribute='age') }}
+
+{# turn the list of dict to a json format #}
+{{ employee | tojson }}
+
+{# generate some lipsum #}
+{{ lipsum(n=5, html=True, min=20, max=100) | striptags }}
+
+
+{# set variable #}
+{% set navigation="yes" %}
+{% if navigation=="yes" %}
+{% endif %}
+
+{# try to use the joiner() to add pipe in between the sections #}
+{% set pipe = joiner('|') %}
+
+{% set categories=["a", "b", "c", "d", "e"] %}
+{% if categories %} {{ pipe() }}
+    Categories: {{ categories | join(",") }}
+{% endif %}
+
+{{ pipe() }}
+{% if categories %}
+    Categories: {{ categories | join(",") }}
+{% endif %}
+
+{# use with, this make it possible to create a inner scope #}
+{% with %}
+    {% set foo = 42%}
+{% endwith%}
+foo is not visible here any longer
+
+{# you can use the call block to call a macro with the block content appended as its last argument. #}
+{%macro render_dialog(title, class='dialog) -%}
+    <div class="class">
+        <h2>{{title}}</h2>
+        <div class="contents">
+            {{ caller() }}
+        </div>
+    </div>
+{%- endmacro%}
+
+{% call render_dialog('hello world') %}
+    This is a sample dialog rendered by using a macro and a call block 
+{% endcall %}
+
+{# check type: type_debug - ansible #}
+{{ navigation | type_debug }}
+
+{# using map test functions #}
+{{ employee | map(attribute='name') | join(',') }}
+
+{# extract filter the value from a list, this will extract x, z #}
+{{ [0, 2] | map('extract', ['x', 'y', 'z']) | list }}
+
+{# this will extract the value 42, 31 #}
+{{ ['x', 'y'] | map('extract', {'x': 42, 'y': 31}) | list }}
+
+{# permutatons test#}
+{# {{ [1,2,3,4,5] | ansible.builtin.permutations | list }} #}
+{{ [1,2,3,4,5] | ansible.builtin.permutations(3) | list }}
+
+{# combinations #}
+{{ [1,2,3,4,5] | ansible.builtin.combinations(2) | list }}
+
+{{ [3, [4, 2] ] | flatten }}
+{{ [3. [4, [2] ] | flatten(levels=1) }}
+
+{# searching string with regular expressions #}
+{{ 'server1/database42' | regex_search('database[09-]+') }}
+
+{{ 'foo\nBAR' | regex_search('^bar', multiline=True, ignorecase=True) }}
+
+{# extract server and database id from a string #}
+{{ 'server1/database42' | regex_search('server([0-9]+)/database([0-9]+)', '\\1', '\\2') }}
+
+

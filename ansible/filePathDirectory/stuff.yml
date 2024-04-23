@@ -1,0 +1,12 @@
+employee:
+  - name: Json
+    age: 30
+    country: England
+  
+  - name: Lee
+    age: 28
+    country: Japan
+
+  - name: Robin
+    age: 38
+    country: America

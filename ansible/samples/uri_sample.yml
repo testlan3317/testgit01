@@ -1,0 +1,36 @@
+---
+- name: uri test
+  hosts: <host>
+  gather_facts: false
+  environments:
+    DOCKER_CONTENT_TRUST: "<enable|disable>"
+
+  pre_tasks:
+    - include_vars:
+        file: <xxx.yml>
+    - name: subtask1
+      copy:
+        src: <src>
+        dest: <dst>
+      with_items:
+        - "dct/st/"
+
+  tasks:
+    - include_role:
+        name: <role_name>
+      loop: "{{aaa}}"
+    
+    - name: get metadata
+      ansible.builtin.uri:
+        url: <url>
+        validate_certs: <validate>
+        method: GET
+        status_code: [200]
+        headers:
+          Content-Type: application/json
+          authorization: "<authorization>"
+        body_format: json
+        body: <body>
+      register: users
+      check_mode: no 
+      when: <condition>

@@ -8,8 +8,8 @@
       template:
         src: ./template/service_1.j2
         dest: ./{{item.name}}_service1.txt
-        owner: zhengj
-        group: zhengj
+        owner: myuser
+        group: myuser
         mode: "0755"
       when: item.name == "service"
       loop: "{{servicefolders}}"
