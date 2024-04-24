@@ -33,7 +33,9 @@ a. The context dictionary by the application with **markupsafe.Markup**
 b. The template, with the `|safe` filter
 
 Jinja2 filters, functions etc: [jinja2 - trim](https://jinja.palletsprojects.com/en/2.11.x/templates/#trim "trim function")
+
 Ansible filter: [Ansible filter](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html "Ansible Filters")
+
 Ansible Builtin Filters, [Global Functions](https://tedboy.github.io/jinja2/templ16.html "Global Functions")
 
 ***Note***
