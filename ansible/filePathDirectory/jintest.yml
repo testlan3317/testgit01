@@ -1,0 +1,32 @@
+---
+- name: test jinja2 template file
+  hosts: localhost
+  gather_facts: false
+  vars:
+    - service_folder: ["abcservice", "abtserver", "abbgwserver", "abbserverdb", "ctrlerdb"]
+    - employee: [
+      {
+        name: Jason,
+        age: 30,
+        country: America
+      },
+      {
+        name: Wang,
+        age: 50,
+        country: France
+      },
+      {
+        name: James,
+        age: 45,
+        country: Australia
+      }
+    ]
+  tasks:
+  - name: use the template
+    template:
+      src: ./template/service.j2
+      dest: ./service.txt
+      group: myuser
+      group: myuser
+      mode: "0755"  
+      

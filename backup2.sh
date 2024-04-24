@@ -48,6 +48,6 @@ else
 	echo "Backup of $input failed!"
 fi
 
-
+# grep /$ : means, grep items ends with `/`, which directory normally ends up with. 
 # the script uses a new shell scripting trick ${} called "parameter expansion". In out case, curly braces {} are required because
 # our variable $user is followed by characters which are not part of its variable name.
