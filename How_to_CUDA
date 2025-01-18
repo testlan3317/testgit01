@@ -1,0 +1,184 @@
+Nvidia CUDA Installation Guide for Linux
+CUDA is a parallel computing platform and programming model invented by NVIDIA. It enables dramatic increases in computing performance
+by harnessing the power of the graphics processing unit (GPU).
+
+CUDA was developed with several design goals in mind:
+- Provide a small set of extensions to standard programming languages, like C, that enable a straightforward implementation of parallel
+algorithms. With CUDA C/C+++, programmers can focus on the task of parallelization of the algorithms rather than spending time on 
+their implementation. 
+
+- Support heterogeneous computing where applications use both the CPU and GPU. Serial portions of applications are run on the CPU, and 
+parallel portitions are offloaded to the GPU. As such, CUDA can be incrementally applied to existing applications. The CPU and GPU are
+treated as separate devices that have their own memory spaces. This configuraiton also allows simultaneous computation on the CPU and
+GPU without contention for memory resources. 
+
+CUDA-capable GPUs have hundreds of cores that can collectively run thousands of computing threads. These cores have shared resources
+including a register file and a shared memory. The on-chip shared memory allows parallel tasks running on these cores to share data
+without sending it over the system memory bus. 
+
+2. Pre-installation Action:
+Some actions must be taken before the CUDA toolkit and Driver can be installed on Linux:
+- verify the system has a CUDA-capability GPU.
+
+    $ lspci | grep -i nvidia
+
+if you do not see any settings, update the PCI hardware database that linux maintains by entering "update-pciids" (generally found in
+"/sbin") at the command line and rerun the previous "lspci". 
+
+If your graphics card is from NVIDIA and it is listed in https://developer.nvidia.com/cuda-gpus, your GPU is CUDA-capable.
+
+- Verify the system is running a supported version of Linux
+
+    $ uname -m && cat /etc/*release
+
+You should see the output similar to the following:
+x86_64
+Red Hat Enterprise Linux Workstation release 6.0 (Santiago)
+
+The x86_64 line indicates you are running on a 64-bit system. The remainder gives information about your distribution. 
+
+- Verify the system has gcc installed
+
+gcc --version
+
+- Verify the system has the correct kernel headers and development packages installed. 
+
+    $ uname -r
+
+This is the version of the kernel headers and development packages that must be installed prior to installing the CUDA drivers. 
+This command will be used multiple times below to specify the version of the packages to install.
+Note: that below the common-case scenarios for kernel usage. More advanced cases, such as custom kernel branches, should ensure 
+that their kernel headers and sources match the kernel build they are running. 
+
+Note: if you perform a system update which changes the version fo the Linux kernel being used, make sure to rerun the commands below
+to ensure you have the correct kernel headers and kernel development packages installed. Otherwise, the CUDA Driver will fail to 
+work with the new kernel.
+
+    $ sudo apt-get install linux-headers-$(uname -r)
+
+
+- Download the NVIDIA CUDA Toolkit
+
+The CUDA Toolkit can be isntalled using either of two different installation mechanisms: distribution-specific packages (RPM and
+packages), or distribution-independent package (runfile packages).
+
+The distribution-independent package has the advantage of working across a wider set of Linux distributions, but does not update the
+distribution's native package management system. 
+
+The distribution-specific packages interface with the distribution's native package management system. It is recommended to use the
+distribution-specific packages, where possible. 
+
+The NVIDIA CUDA Toolkit is available at https://developer.nvidia.com/cuda-downloads.
+
+The CUDA Toolkit contains the CUDA driver and tools needed to create, build and run a CUDA application as well as libraries, header
+files, and other resources. 
+
+- Handle conflicting installation methods
+Before installing CUDA, any previous installations that could conflict should be uninstalled. This will not affect systems which have
+not had CUDA installed previously, or systems where the installation method has been preserved (RPM/DEb vs. Runfile). 
+
+Use the following command to uninstall a Toolkit runfile installation:
+
+    $ sudo /usr/local/cuda-X.Y/bin/cuda-uninstaller
+
+Use the following command to uninstall a Driver runfile installation:
+    $ sudo /usr/bin/nvidia-uninstall
+
+Use the following commands to uninstall an RPM/Deb installation:
+
+    $ sudo dnf remove <package_name>        # RHEL8/Centos 8
+    $ sudo yum remove <package_name>        # RHEL7/Centos 7
+
+    $ sudo apt-get --purge remove <package_name>   # Ubuntu
+
+3. Package Manager Install:
+-1. perform the pre-installation actions
+
+-2. Install repository meta-data:
+    $ sudo dpkg -i cuda-repo-<distro>_<version>_<architecture>.deb
+
+-3. Install the CUDA public GPG key:
+    when installing using the local repo:
+        $ sudo apt-key add /var/cuda-repo-<distro>-<version>/7fa2af80.pub
+    when installing using network repo on Ubuntu 20.04/18.04:
+        $ sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/<distro>/<architecture>/7fa2af80.pub
+    pin file to prioritize CUDA repository:
+        $ wget https://developer.download.nvidia.com/compute/cuda/repos/<distro>/<architecture>/cuda-<distro>.pin
+        $ sudo mv cuda-<distro>.pin /etc/apt/preferences.d/cuda-repository-pin-600
+-4. Update the Apt repository cache:
+        $ sudo apt-get udpate
+-5. Install CUDA:
+    Note: these two commands must be executed separately
+        $ sudo apt-get install cuda
+    To include all GDS packages:
+        $ sudo apt-get install nvidia-gds
+-6. Reboot the system:
+        $ sudo reboot
+-7. Perform the post-installation actions.
+
+12. Post-Installtion Actions:
+The post-installation actions must be manually performed. These actions are split into mandatory, recommended, and optional sections. 
+
+12.1 Mandatory Actions:
+    Some actions must be taken after the installation before the CUDA Toolkit and Driver can be used. 
+
+    12.1.1 Environment Setup
+    The PATH variable needs to include export PATH=/usr/local/cuda-11.6/bin${PATH:+:${PATH}}. Nsight Compute has moved to 
+    "/opt/nvidia/nsight-compute/" only in rpm/deb installation method. when using ".run" installer it is still located under
+    "/usr/local/cuda-11.6".
+
+    To add this path to the PATH variable:
+    export PATH=/usr/local/cuda-11.6/bin${PATH:+:${PATH}}
+
+    In addition, when using hte runfile installation method, the LD_LIBRARY_PATH variable needs to contain /usr/local/cuda-11.6/lib64
+    on a 64-bit system, or /usr/local/cuda-11.6/lib on 32-bit system
+    - To change the environment variables for 64-bit operating systems:
+        export LD_LIBRARY_PATH=/usr/local/cuda-11.6/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+    - To change the environment variables for 32-bit operating systems:
+        export LD_LIBRARY_PATH=/usr/local/cuda-11.6/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+    note: the above paths change when using a custom install path with the runfile installation method.
+
+12.1.2 POWER9 Setup
+Because of the addition of new features specific to the NVIDIA POWER9 CUDA driver, there are some additional setup requirements in
+order for the driver to function properly. These additional steps are not handled by the installation of CUDA packages, and failure 
+to ensure these extra requirements are met will result in a non-functional CUDA driver installation.
+
+There are two changes that need to be made manually after installing the NVIDIA CUDA driver to ensure proper operation:
+1. The NVIDIA Persistence Daemon should be automatically started for POWER9 installation. Check that it is running:
+    
+    $ systemctl status nvidia-persistenced
+
+    if it is not active, runt he following command:
+    
+    $ sudo systemctl enable nvidia-persistenced
+
+2. Disable a udev rule installed by default in some Linux distributions that cause hot-pluggable memory to be automatically online 
+when it is physically probed. This behavior prevents NVIDIA software from bringing NVIDIA device memory online with non-default
+settings. This udev rule must be disabled in order for the NVIDIA CUDA driver to function properly on POWER9 systems. 
+
+    On RedHat Enterprise Linux 8.1, this rule can be found in:
+    /lib/udev/rules.d/40-redhat.rules
+
+    on Ubuntu 18.04, this rule can be found in:
+    /lib/udev/rules.d/40-vm-hotadd.rules
+
+    The rule generally takes a form where it detects the addition of a memory block and changes the 'state' attribute to online. For
+    example, in RHEL8, the rule looks like this:
+    
+    SUBSYSTEM=="memory", ACTION=="add", PROGRAM="/bin/uname -p", RESULT!="s390*", ATTR{state}=="offline", ATTR{state}="online"
+
+    This rule must be disabled by copying the file to "/etc/udev/rules.d" and commenting out, removing, or changing the hot-pluggable
+    memory rule in the "/etc" copy so that it does not apply to POWER9 NVIDIA systems. For example, on RHEL 7.5 and earlier:
+
+    $ sudo cp /lib/udev/rules.d/40-redhat.rules /etc/udev/rules.d
+    $ sudo sed -i '/SUBSYSTEM=="memory", ACTION=="add"/d' /etc/udev/rules.d/40-redhat.rules
+
+    on RHEL 7.6 and later versions:
+    $ sudo cp /lib/udev/rules.d/40-redhat.rules /etc/udev/rules.d
+    $ sudo sed -i 's/SUBSYSTEM!="memory", .*GOTO="memory_hotplug_end"/SUBSYSTEM=="*", GOTO="memory_hotplug_end"/' /etc/udev/rules.d/40-redhat.rules
+    You will need to reboot the system to initialize the above changes. 
+
+
+To confirm whether cuda is working, run:
+    $ nvcc --version

@@ -1,0 +1,132 @@
+How to install Anaconda on Ubuntu 20.04
+Anaconda is a popular Python/R data science and machine learning platform, used for large-scale data processing, predictive
+analytics, and scientific computing. 
+
+Anaconda distribution ships with 250 open-srouce data packages, and more than 7500 additional packages can be installed from 
+the Anacoda repositories. It also includes the "conda" command-line tool and a desktop graphical user interface called
+"Anaconda Navigator".
+
+Installing Anaconda 
+Before downloading the installer script, visit the Download page and check if there is a new version of Anaconda for Python3 
+available for download.
+
+complete the following steps:
+
+- Anaconda Navigator is a QT-based GUI. If you are installing Anaconda on a desktop machine and you want to use the GUI
+application, install the following packages. Otherwise, skip this step.
+
+$sudo apt install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
+
+- Download the Anaconda installation script with your web browser or wget:
+
+$wget -P /tmp https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+
+- This step is optional, but it's recommended to verify the data integrity of the script. 
+Use the "sha256sum" command to display the script checksum:
+
+$sha256sum /tmp/Anaconda3-2020.02-Linux-x86_64.sh
+
+The output should look like this:
+
+2b9f088b2022edb474915d9f69a803d6449d5fdb4c303041f60ac4aefcc208bb  /tmp/Anaconda3-2020.02-Linux-x86_64.sh
+
+Make sure the hash printed from the command above matches the one available at the Anaconda with Python3 on 64-bit Linux page
+for your appropriate Anaconda version.
+
+https://docs.anaconda.com/anaconda/install/hashes/Anaconda3-2020.02-Linux-x86_64.sh-hash/
+
+- Run the script to start the installtion process:
+
+$bash /tmp/Anaconda3-2020.02-Linux-x86_64.sh
+
+You should see an output like the following:
+
+Welcome to Anaconda3 2020.02
+
+In order to continue the installation process, please review the license
+agreement.
+Please, press ENTER to continue
+>>>
+
+Press Enter to continue. 
+Do you approve the license terms? [yes|no]
+Type "yes" to accept the license and you'll be prompted to choose the installation location:
+
+Anaconda3 will now be installed into this location:
+/home/linuxize/anaconda3
+
+    - Press ENTER to confirm the location
+    - Press CTRL-C to abort the installation
+    - Or specify a different location below
+
+The default locaiton should be fine for most users. Press Enter to confirm the location. 
+
+Once the installation is completd, the script will ask you whether you want to run "conda init". Type yes
+
+Installation finished.
+Do you wish the installer to initialize Anaconda3
+by running conda init? [yes|no]
+
+This will add the command line tool "conda" to your system's PATH.
+
+To activate the Anacoda installation, you can either close and re-open your shell or load the new PATH environment variable
+into the current shell session by typing:
+
+$ source ~/.bashrc
+
+Updating Anaconda:
+Updating the Anaconda is a pretty straight forward process:
+
+$ conda update --all
+
+If there are updates, conda will display a list and prompt you to confirm the update:
+
+The following packages will be UPDATED:
+
+  anaconda-navigator                          1.9.12-py37_0 --> 1.9.12-py37_1
+  conda                                        4.8.2-py37_0 --> 4.8.3-py37_0
+  conda-package-han~                   1.6.0-py37h7b6447c_0 --> 1.6.1-py37h7b6447c_0
+
+
+Proceed ([y]/n)?
+
+It is good idea to update your Anaconda installation regularly.
+
+Uninstalling Anaconda
+If you want to uninstall Anaconda from your Ubuntu system, remove the Anaconda installation directory and all other files that
+have been created during the installation:
+
+$ rm -rf ~/anaconda3 ~/.condarc ~/.conda ~/.continuum
+
+Open the ~/.bashrc file and remove the Anaconda directory from the PATH environment variable:
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/linuxize/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/linuxize/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/linuxize/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/linuxize/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+Normal issue: there is no icon on the panel at Ubuntu 20.04. 
+
+so we have to create a file (anaconda.desktop) to link the icon
+create a file: ~/.local/share/applciations/anaconda.desktop
+content as below:
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Anaconda
+Exec=/home/yourusername/anaconda3/bin/anaconda-navigator
+Icon=/home/yourusername/anaconda3/lib/python3.9/site-packages/anaconda_navigator/app/icons/Icon1024.png
+Terminal=false
+
+Then, you will see the icon at the applications panel
+

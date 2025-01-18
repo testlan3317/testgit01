@@ -1,0 +1,105 @@
+Token Authentication:
+The X server controls the access to an X server using a magic cookie that is a machine-readable randomly generated access code. 
+Each X client should provide the same magic cookie value to the server to gain access to the X server. 
+The magic cookie value is stored in the .Xauthority file in the home directory
+
+You use "xauth" program to edit and display the magic cookie authorization information of a user. Once the magic cookie is displayed
+in a readable form, it can be sent to a remote host where the "xauth" program is used to merge the magic cookie into the .Xauthority
+file of the user. 
+
+You send the authorization information to a remote host with the command:
+
+$ xauth extract - $DISPLAY | ssh 192.168.0.215 /sur/X11R6/bin/xauth merge -
+
+The first command, xauth extract - $DISPLAY, prints the magic cookie for the current host to the standard output, the dash. 
+The magic cookie value is then piped to the secure shell command, which runs the xauth program on the system 192.168.0.215. 
+The magic cookie then is read from the standard input, the dash, and merged inot the .Xauthority file.
+
+The above shows the sending process of the magic cookie using the xauth program. You can also use the command:
+
+$ scp ~/.Xauthority 192.168.0.215:
+
+The user who executed the commands can run X clients on 192.168.0.215, and have them displayed on the X server. The user is the only
+user on 192.168.0.215 who can connect an X client to their X sever, all other users on 192.168.0.215 are still blocked out of this
+X session.
+
+You need to correctly set the file permissions for the ~/.Xauthority file. The ~/.Xauthority file should be readable/writable by the 
+owner only. The file permissoin for ~/.Xauthority file should be set to "-rw-------"(600).
+
+There are 2 articles I quoted online, it's really helpful. 
+
+1. Running root apps seamlessly on a normal user's desktop
+
+
+
+I’m a network engineer, and I run Kubuntu on the desktop. Which means I often run applications as root: Wireshark, Ettercap, Zenmap, etc. I prefer a seamless desktop experience, meaning I like my GUI customisations to apply to root applications, not just those running as my own user. Secondly, I like to directly launch GUI apps from a root terminal.
+
+    Allow root to display applications on the user’s desktop
+
+    Normally only the logged-in user has the authority to run X applications. This is a good thing, and a useful security feature. Running commands as your user with sudo allows that application to use your X session, like so:
+
+    sudo wireshark
+
+    However, this doesn’t work:
+
+    sudo -i
+    (now as root) wireshark
+
+    We can work around this by modifying root’s ~/.Xauthority file. Either copy yours or link it into /root/, and you’re done:
+
+    cd /root/
+    ln -f -s /home/username/.Xauthority
+
+    If you have multiple users on the same machine, you can achieve the same goal by merging several files using the xauth command.
+    Retain environment variables when you execute sudo
+
+    OK, now root can make X apps display on tyler’s display, but he still has to set the DISPLAY variable or pass a -display argument. So let’s keep this variable when we login as root with “sudo -i“.
+
+    Add the following somewhere in /etc/sudoers:
+
+    Defaults                 env_keep+="DISPLAY XAUTHORITY"
+
+    Or just for one user:
+
+    Defaults:username        env_keep+="DISPLAY XAUTHORITY"
+
+    Now DISPLAY, and if you use it, XAUTHORITY, follow you if you use sudo. You can add any others to this list if you like.
+    Keep the same GTK preferences as root
+
+    Now, your root GTK apps run and display, but they look like something from Windows 95. This is because GTK has absolutely horrific default settings which are nearly always overridden by your window manager’s theme, and root doesn’t have your GTK preferences. That’s easy to fix:
+
+    cd /root/
+    ln -f -s /home/username/.gtkrc-2.0
+
+    And if you use KDE with the “Use my KDE style in GTK applications” (gtk-qt-engine) setting, you might also want:
+
+    cd /root/
+    ln -f -s /home/username/.gtk_qt_engine_rc
+
+Finally, I just like a better sudo prompt. So I set this at the botton of /etc/bash.bashrc on every machine I manage:
+
+export SUDO_PROMPT="[sudo] password for %u@%h: "
+
+This is better than the sudo default (the totally ambiguous “Password: “) or the Ubuntu default (“[sudo] password for username: “) because it also lists the host you are currently on. If you login to as many machines as I do, confusing one sudo prompt for another is an easy way to ruin your day.
+---------------------------------------------
+2nd article:
+How to keep X11-forwarding after chaning user to root inside a SSH session in MobaXterm. 
+This is by default not allowed on Unix/Linux systems, because the X11 display connection belongs to the user you used to log with
+when connecting to your remote SSH server. X11-forwarding mechanism does not allow anyone to use the open display.
+
+X11-forwarding mechanism does not allow anyone to use the open display.
+
+However, in some cases you may need to start a graphical application like nedit or firefox in a sudo or su context. In order to
+achieve this, you could manually retrieve X credentials in the su/sudo context by looking up the "xauth list" for the original
+username and then adding them using "xauth add" to the current context.
+
+you can also use a signle command in order to achieve this
+
+Let's assume that you are connected to a remote server using SSH with username "john"
+In this session, if you want to launch a graphical application using the "sudo" command (like "sudo firefox" for instance).
+
+1. In order to make it work, you just have to execute the following command before the "sudo firefox"
+
+$ sudo xauth add $(xauth -f ~john/.Xauthority list|tail -1)
+
+
