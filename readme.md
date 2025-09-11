@@ -41,4 +41,4 @@ Ansible Builtin Filters, [Global Functions](https://tedboy.github.io/jinja2/temp
 ***Note***
 **Bash doesn't support Perl Regex, bash understands standard extended regular expression (ERE).**
 Perl Regex reference page: [Perl Regex](https://www.pcre.org/original/doc/html/pcresyntax.html#TOC1 "Perl Regex")
-# coding some text
+coding some text
