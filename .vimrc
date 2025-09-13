@@ -75,7 +75,7 @@ set hlsearch
 " set history=100
 "
 
-let g:vimspector_python = '/home/jerome/py396_project/lab1/bin/python'
+let g:vimspector_python = '~/py396_project/lab1/bin/python'
 
 
 
