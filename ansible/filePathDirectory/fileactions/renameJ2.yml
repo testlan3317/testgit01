@@ -1,0 +1,25 @@
+---
+- name: complex list of dictionary example
+  hosts: redhatclient
+  gather_facts: no
+  tasks:
+  - name: check if files existing
+    ansible.builtin.find:
+      path: /home/user1/
+      patterns: "*.j2"
+    register: j2exists
+
+  - name: check status
+    debug:
+      var: j2exists
+  
+  - name: loop info
+    debug:
+      msg: found files "{{ item.path }}"
+    loop: "{{ j2exists.files }}"
+
+  - name: rename files
+    ansible.builtin.shell: |
+      mv "{{ item.path }}"  $(echo "{{ item.path }}" | sed 's/\(.*\)\.j2/\1/')
+    loop: "{{ j2exists.files }}"
+    when: j2exists.files | length > 0

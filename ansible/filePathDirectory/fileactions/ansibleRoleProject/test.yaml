@@ -1,0 +1,6 @@
+---
+- name: test role
+  hosts: redhatclient
+  gather_facts: no
+  roles:
+    - jinjaTemp

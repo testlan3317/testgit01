@@ -1,0 +1,6 @@
+---
+- name: clean j2 files
+  hosts: redhatclient
+  gather_facts: no
+  roles:
+  - fileclean

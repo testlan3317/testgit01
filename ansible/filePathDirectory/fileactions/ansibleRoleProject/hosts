@@ -1,0 +1,2 @@
+[redhatclient]
+devopsmachine ansible_host=10.10.10.121 hostname=devopsmachineclient1 changed=true

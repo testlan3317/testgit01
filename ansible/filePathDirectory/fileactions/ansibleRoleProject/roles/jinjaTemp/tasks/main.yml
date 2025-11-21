@@ -1,0 +1,8 @@
+---
+- name: copy jinja files to destination
+  tempalte:
+    src: "{{ item }}"
+    dest: "/home/user1"
+  with_items:
+    - tools/controller/logclean.sh
+    - tools/controller/errorStatistics.sh

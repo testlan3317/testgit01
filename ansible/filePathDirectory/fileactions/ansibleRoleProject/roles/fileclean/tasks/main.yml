@@ -1,0 +1,13 @@
+---
+- name: clean the lab files
+  ansible.builtin.find:
+    path: /home/user1/
+    patterns: "*.j2"
+  register: j2exists
+
+- name: clear j2
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ j2exists.files }}"
+  when: j2exists.file | length > 0
